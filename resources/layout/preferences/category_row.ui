@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <template class="CategoryRow" parent="AdwActionRow">
+        <property name="title" translatable="yes">Category</property>
+        <property name="activatable">True</property>
+        <signal name="activated" handler="activate_handler" />
+        <child>
+            <object class="GtkButton">
+                <property name="valign">center</property>
+                <signal name="clicked" handler="delete_category" />
+                <child>
+                    <object class="AdwButtonContent">
+                        <property name="icon-name">user-trash-symbolic</property>
+                    </object>
+                </child>
+            </object>
+        </child>
+    </template>
+</interface>

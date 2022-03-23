@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <template class="FileChooserButton" parent="GtkButton">
+        <property name="child">
+            <object class="AdwButtonContent" id="button_content">
+                <property name="label"></property>
+                <property name="icon-name">folder-symbolic</property>
+            </object>
+        </property>
+        <signal name="clicked" handler="button_clicked" />
+    </template>
+</interface>

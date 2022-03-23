@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+    <schema path="/com/github/essmehdi/atay/" id="com.github.essmehdi.atay">
+        <key name="categories" type="a{sa{ss}}">
+            <default>
+                {}
+            </default>
+            <summary>Download categories</summary>
+            <description>Directories and extensions for auto-sorting</description>
+        </key>
+        <key name="fallback-directory" type="s">
+            <default>"~/Downloads"</default>
+            <summary>Fallback directory</summary>
+            <description>Where to put files that don&#39;t match categories</description>
+        </key>    
+        <key name="connection-timeout" type="u">
+            <default>10</default>
+            <summary>Timeout</summary>
+            <description>Time given before a connection is dropped</description>
+        </key>
+        <key name="connection-proxy" type="b">
+            <default>false</default>
+            <summary>Custom proxy</summary>
+            <description>Override system proxy settings for connections</description>
+        </key>
+        <key name="connection-proxy-address" type="s">
+            <default>""</default>
+            <summary>Custom proxy address</summary>
+            <description>Custom proxy address (if enabled)</description>
+        </key>
+        <key name="connection-proxy-port" type="u">
+            <default>3128</default>
+            <summary>Custom proxy port</summary>
+            <description>Custom proxy port (if enabled)</description>
+        </key>
+        <key name="user-agent" type="s">
+            <default>"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"</default>
+            <summary>Download user agent</summary>
+            <description>The user agent string sent in request headers</description>
+        </key>
+        <key name="force-dark" type="b">
+            <default>false</default>
+            <summary>Force dark mode</summary>
+            <description>A quick toggle to force dark mode on the app</description>
+        </key>
+        <key name="window-width" type="i">
+            <default>-1</default>
+            <summary>Saved window width</summary>
+            <description>Saving last window width for future launches</description>
+        </key>
+        <key name="window-height" type="i">
+            <default>-1</default>
+            <summary>Saved window height</summary>
+            <description>Saving last window height for future launches</description>
+        </key>
+        <key name="window-maximized" type="b">
+            <default>false</default>
+            <summary>Saved window maximized state</summary>
+            <description>Saving last window maximized state</description>
+        </key>
+    </schema>
+</schemalist>

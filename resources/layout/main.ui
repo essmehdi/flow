@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="RitzerWindow" parent="AdwApplicationWindow">
+    <property name="title">Atay</property>
+    <property name="content">
+      <object class="GtkBox">
+        <property name="visible">1</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkHeaderBar" id="header_bar">
+            <property name="visible">1</property>
+            <style>
+              <class name="flat"/>
+            </style>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <child>
+                  <object class="GtkButton" id="new_download">
+                    <property name="action-name">win.new</property>
+                    <property name="child">
+                      <object class="AdwButtonContent">
+                        <property name="icon-name">list-add-symbolic</property>
+                      </object>  
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="delete_selected">
+                    <property name="action-name">win.delete-selected</property>
+                    <property name="child">
+                      <object class="AdwButtonContent">
+                        <property name="icon-name">edit-delete-symbolic</property>
+                      </object>  
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkMenuButton" id="menu_button">
+                <property name="popover">menu_popover</property>
+                <property name="icon_name">open-menu-symbolic</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+         <object class="GtkStack" id="empty_stack">
+          <property name="transition-type">crossfade</property>
+          <child>
+            <object class="GtkStackPage">
+              <property name="name">not_empty_page</property>
+              <property name="child">
+                <object class="AdwToastOverlay" id="toast_overlay">
+                  <property name="hexpand">True</property>
+                  <property name="vexpand">True</property>
+                  <child>
+                    <object class="GtkScrolledWindow" id="scrolled_window">
+                      <property name="hscrollbar-policy">automatic</property>
+                      <property name="hexpand">True</property>
+                      <property name="vexpand">True</property>
+                      <child>
+                        <object class="GtkViewport">
+                          <property name="scroll_to_focus">True</property>
+                          <child>
+                            <object class="AdwClamp" id="clamp">
+                              <property name="maximum-size">700</property>
+                              <property name="tightening-threshold">400</property>
+                              <property name="child">
+                                <object class="GtkBox" id="content">
+                                  <property name="margin-start">20</property>
+                                  <property name="margin-end">20</property>
+                                  <property name="margin-top">20</property>
+                                  <property name="margin-bottom">20</property>
+                                  <property name="orientation">vertical</property>
+                                  <property name="spacing">20</property>
+                                  <child>
+                                    <object class="GtkBox" id="downloads">
+                                      <property name="orientation">vertical</property>
+                                      <property name="spacing">10</property>
+                                      <child>
+                                        <object class="GtkBox" id="running_section">
+                                          <property name="orientation">vertical</property>
+                                          <property name="spacing">5</property>
+                                          <child>
+                                            <object class="GtkLabel">
+                                              <property name="halign">start</property>
+                                              <property name="label" translatable="yes">Running</property>
+                                              <style>
+                                                <class name="title-1" />
+                                              </style>
+                                            </object>
+                                          </child>
+                                          <child>
+                                            <object class="GtkFrame">
+                                              <child>
+                                                <object class="GtkListBox" id="running_downloads_list">
+                                                  <property name="selection-mode">GTK_SELECTION_NONE</property>
+                                                  <property name="activate-on-single-click">False</property>
+                                                </object>
+                                              </child>
+                                            </object>
+                                          </child>
+                                        </object>
+                                      </child>
+                                      <child>
+                                        <object class="GtkBox" id="finished_section">
+                                          <property name="orientation">vertical</property>
+                                          <property name="spacing">5</property>
+                                          <child>
+                                            <object class="GtkLabel">
+                                              <property name="halign">start</property>
+                                              <property name="label" translatable="yes">Finished</property>
+                                              <style>
+                                                <class name="title-1" />
+                                              </style>
+                                            </object>
+                                          </child>
+                                          <child>
+                                            <object class="GtkFrame">
+                                              <child>
+                                                <object class="GtkListBox" id="finished_downloads_list">
+                                                  <property name="selection-mode">GTK_SELECTION_NONE</property>
+                                                  <property name="activate-on-single-click">False</property>
+                                                </object>
+                                              </child>
+                                            </object>
+                                          </child>
+                                        </object>
+                                      </child>
+                                    </object>
+                                  </child>
+                                </object>
+                              </property>
+                            </object>
+                          </child>
+                        </object>
+                      </child>
+                    </object>
+                  </child>    
+                </object>
+              </property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkStackPage">
+              <property name="name">empty_page</property>
+              <property name="child">
+                <object class="AdwStatusPage">
+                  <property name="title" translatable="yes">No downloads yet</property>
+                  <property name="icon-name">content-loading-symbolic</property>
+                  <property name="description" translatable="yes">Add a download from URL or use your browser extension to catch one</property>
+                  <property name="child">
+                    <object class="GtkButton">
+                      <property name="halign">center</property>
+                      <property name="action-name">win.new</property>
+                      <property name="child">
+                        <object class="AdwButtonContent">
+                          <property name="label" translatable="yes">Add from URL</property>
+                          <property name="icon-name">list-add-symbolic</property>
+                        </object>
+                      </property>
+                      <style>
+                        <class name="suggested-action" />
+                      </style>
+                    </object>
+                  </property>
+                </object>    
+              </property>
+            </object>
+          </child>
+         </object>
+        </child>
+      </object>
+    </property>
+  </template>
+  <menu id="menu">
+    <item>
+      <attribute name="label" translatable="yes">Preferences</attribute>
+      <attribute name="action">win.preferences</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Keyboard shortcuts</attribute>
+      <attribute name="action">win.shortcuts</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">About</attribute>
+      <attribute name="action">win.about</attribute>
+    </item>
+  </menu>
+  <object class="GtkPopoverMenu" id="menu_popover">
+    <property name="menu-model">menu</property>
+  </object>
+</interface>

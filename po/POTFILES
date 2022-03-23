@@ -1,0 +1,16 @@
+resources/layout/main.ui
+resources/layout/url_prompt.ui
+resources/layout/download_item.ui
+resources/layout/download_edit.ui
+resources/layout/about.ui
+resources/layout/preferences/window.ui
+resources/layout/preferences/category_row.ui
+resources/layout/preferences/add_row.ui
+resources/layout/preferences/category_editor.ui
+
+src/components/download_edit.py
+src/components/download_item.py
+src/components/preferences/category_editor.py
+src/controller.py
+src/download.py
+src/main.py

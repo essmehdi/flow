@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+	<requires lib="gtk" version="4.0" />
+	<requires lib="adwaita" version="1.0" />
+	<template class="DownloadPrompt" parent="AdwWindow">
+        <property name="title">Confirm download</property>
+        <property name="modal">True</property>
+        <property name="resizable">False</property>
+        <property name="default-width">600</property>
+        <property name="deletable">False</property>
+        <property name="content">
+            <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">20</property>
+                <child>
+                    <object class="GtkHeaderBar">
+                        <style>
+                            <class name="flat" />
+                        </style>
+                    </object>
+                </child>
+                <child>
+                    <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">10</property>
+                        <property name="halign">start</property>
+                        <property name="margin-start">20</property>
+                        <property name="margin-end">20</property>
+                        <property name="margin-bottom">20</property>
+                        <property name="hexpand">1</property>
+                        <property name="halign">fill</property>
+                        <child>
+                            <object class="GtkBox" id="url_section">
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">5</property>
+                                <child>
+                                    <object class="GtkLabel">
+                                        <property name="label" translatable="yes">URL</property>
+                                        <property name="halign">start</property>
+                                        <style>
+                                            <class name="title-4" />
+                                        </style>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkLabel" id="url_label">
+                                        <property name="label">https://www.google.com/</property>
+                                        <property name="ellipsize">middle</property>
+                                        <property name="halign">start</property>
+                                        <style>
+                                            <class name="dim-label" />
+                                        </style>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkBox" id="filename_section">
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">10</property>
+                                <child>
+                                    <object class="GtkLabel">
+                                        <property name="label" translatable="yes">File name</property>
+                                        <property name="halign">start</property>
+                                        <style>
+                                            <class name="title-4" />
+                                        </style>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkEntry" id="filename_entry">
+                                        <signal name="changed" handler="filename_changed" />
+                                        <property name="text">file.txt</property>
+                                        <property name="halign">fill</property>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkBox" id="directory_section">
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">5</property>
+                                <child>
+                                    <object class="GtkLabel">
+                                        <property name="label" translatable="yes">Directory</property>
+                                        <property name="halign">start</property>
+                                        <style>
+                                            <class name="title-4" />
+                                        </style>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="FileChooserButton" id="directory_button">
+                                    </object>
+                                    <!-- <object class="GtkButton" id="directory_button">
+                                        <property name="action-name">dedit.change-directory</property>
+                                        <child>
+                                            <object class="AdwButtonContent">
+                                                <property name="icon-name">folder-symbolic</property>
+                                                <property name="label">(None)</property>
+                                                <property name="halign">center</property>
+                                            </object>
+                                        </child>
+                                    </object> -->
+                                </child>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkBox" id="actions">
+                                <property name="orientation">horizontal</property>
+                                <property name="spacing">5</property>
+                                <property name="halign">center</property>
+                                <property name="margin-top">20</property>
+                                <child>
+                                    <object class="GtkButton" id="cancel_button">
+                                        <property name="action-name">dedit.cancel</property>
+                                        <property name="child">
+                                            <object class="AdwButtonContent" id="cancel_button_content">
+                                                <property name="label" translatable="yes">Cancel</property>
+                                                <property name="icon-name">window-close-symbolic</property>
+                                            </object>
+                                        </property>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkButton" id="save_button">
+                                        <property name="action-name">dedit.save</property>
+                                        <property name="child">
+                                            <object class="AdwButtonContent" id="save_button_content">
+                                                <property name="label" translatable="yes">Save</property>
+                                                <property name="icon-name">document-save-symbolic</property>
+                                            </object>
+                                        </property>
+                                        <style>
+                                            <class name="suggested-action" />
+                                        </style>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>  
+                    </object>
+                </child>
+            </object>
+        </property>
+    </template>
+</interface>

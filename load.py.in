@@ -1,0 +1,32 @@
+#!@PYTHON@
+
+import sys
+import os
+import locale
+import gettext
+
+VERSION = "@VERSION@"
+pkgdatadir = "@pkgdatadir@"
+# Preparing for translation
+localedir = '@localedir@'
+
+try:
+    locale.bindtextdomain('atay', localedir)
+    locale.textdomain('atay')
+except:
+    print('Locale processing failed')
+try:
+    gettext.bindtextdomain('atay', localedir)
+    gettext.textdomain('atay')
+except:
+    print('Translation processing failed')
+
+sys.path.insert(1, pkgdatadir)
+
+if __name__ == "__main__":
+    from gi.repository import Gio
+    resources = Gio.Resource.load(os.path.join(pkgdatadir, 'atay.gresource'))
+    resources._register()
+
+    from atay import main
+    main.main(VERSION)

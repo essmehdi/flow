@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=0.1.0
+Name=Atay
+Comment=A download manager for GNOME
+Exec=atay
+Icon=com.github.essmehdi.atay
+Terminal=false
+Type=Application
+Keywords=Productivity;Download;Manager;
+Categories=Utility;GTK;
+StartupNotify=true

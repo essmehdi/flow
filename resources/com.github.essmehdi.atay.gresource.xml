@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+    <gresource prefix="/com/github/essmehdi/atay">
+        <file>layout/main.ui</file>
+        <file>layout/url_prompt.ui</file>
+        <file>layout/download_item.ui</file>
+        <file>layout/download_edit.ui</file>
+        <file>layout/about.ui</file>
+        <file>layout/file_chooser_button.ui</file>
+        <file>layout/preferences/window.ui</file>
+        <file>layout/preferences/category_row.ui</file>
+        <file>layout/preferences/add_row.ui</file>
+        <file>layout/preferences/category_editor.ui</file>
+        <file>style.css</file>
+    </gresource>
+</gresources>

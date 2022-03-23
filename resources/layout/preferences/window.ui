@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="PreferencesWindow" parent="AdwPreferencesWindow">
+    <property name="default_height">300</property>
+    <property name="default_width">500</property>
+    <property name="modal">True</property>
+    <property name="search-enabled">False</property>
+    <child>
+      <object class="AdwPreferencesPage">
+        <property name="icon-name">preferences-system-symbolic</property>
+        <property name="title" translatable="yes">General</property>
+        <child>
+          <object class="AdwPreferencesGroup" id="appearance_group">
+            <property name="title" translatable="yes">Appearance</property>
+            <child>
+              <object class="AdwActionRow" id="force_dark">
+                <property name="title" translatable="yes">Force dark mode</property>
+                <property name="subtitle" translatable="yes">A quick toggle to force dark mode on the app</property>
+                <property name="activatable-widget">force_dark_toggle</property>
+                <child>
+                  <object class="GtkSwitch" id="force_dark_toggle">
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup" id="downloads_group">
+            <property name="title" translatable="yes">Downloads</property>
+            <child>
+              <object class="AdwActionRow" id="connection_timeout">
+                <property name="title" translatable="yes">Timeout</property>
+                <property name="subtitle" translatable="yes">Time to give to a connection before dropping</property>
+                <property name="activatable-widget">connection_timeout_spin</property>
+                <child>
+                  <object class="GtkSpinButton" id="connection_timeout_spin">
+                    <property name="valign">center</property>
+                    <property name="adjustment">
+                      <object class="GtkAdjustment">
+                        <property name="lower">5</property>
+                        <property name="upper">600</property>
+                        <property name="value">5</property>
+                        <property name="step-increment">5</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwExpanderRow" id="connection_proxy">
+                <property name="title" translatable="yes">Proxy</property>
+                <property name="subtitle" translatable="yes">Overrides system proxy settings</property>
+                <property name="expanded">True</property>
+                <property name="show-enable-switch">True</property>
+                <child>
+                  <object class="AdwActionRow" id="connection_proxy_address">
+                    <property name="title" translatable="yes">Address</property>
+                    <property name="activatable-widget">connection_proxy_address_entry</property>
+                    <child>
+                      <object class="GtkEntry" id="connection_proxy_address_entry">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="connection_proxy_port">
+                    <property name="title" translatable="yes">Port</property>
+                    <property name="activatable-widget">connection_proxy_port_spin</property>
+                    <child>
+                      <object class="GtkSpinButton" id="connection_proxy_port_spin">
+                        <property name="valign">center</property>
+                        <property name="adjustment">
+                          <object class="GtkAdjustment">
+                            <property name="lower">1</property>
+                            <property name="upper">65535</property>
+                            <property name="step-increment">1</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwActionRow" id="user_agent">
+                <property name="title" translatable="yes">User agent</property>
+                <property name="subtitle" translatable="yes">The user agent string sent in request headers</property>
+                <property name="activatable-widget">user_agent_entry</property>
+                <child>
+                  <object class="GtkEntry" id="user_agent_entry">
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwPreferencesPage">
+        <property name="icon-name">folder-open-symbolic</property>
+        <property name="title" translatable="yes">Categories</property>
+        <child>
+          <object class="AdwPreferencesGroup" id="fallback_group">
+            <property name="title" translatable="yes">Fallback settings</property>
+            <child>
+              <object class="AdwActionRow" id="fallback_directory">
+                <property name="title">Fallback directory</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup" id="categories_group">
+            <property name="title" translatable="yes">Categories</property>
+            <property name="description" translatable="yes">Add and edit your categories for auto-sorting downloads. Note that changes only apply for new downloads.</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

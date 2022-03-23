@@ -1,0 +1,7 @@
+{
+    "name": "Atay Messaging Host",
+    "description": "Native messaging for Atay",
+    "path": "/usr/local/bin/atay-connector",
+    "type": "stdio",
+    "allowed_extensions": [ "923c5995c042408834d29c9f5b09274688b9a61d@temporary-addon" ]
+}

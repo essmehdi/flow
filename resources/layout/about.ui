@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <template class="AboutDialog" parent="GtkAboutDialog">
+        <property name="modal">True</property>
+        <property name="title" translatable="yes">About Atay</property>
+        <property name="authors" translatable="yes">Mehdi ESSALEHI</property>
+        <property name="comments" translatable="yes">A download manager for GNOME</property>
+        <property name="logo-icon-name">com.github.essmehdi.atay</property>
+        <property name="website">https://github.com/essmehdi/atay</property>
+        <property name="website-label">GitHub</property>
+        <property name="copyright" translatable="yes">Copyright Ⓒ 2022 - Mehdi ESSALEHI</property>
+    </template>
+</interface>

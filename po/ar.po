@@ -1,0 +1,289 @@
+# POT File for Atay.
+# Copyright (C) 2022 Mehdi ESSALEHI
+# This file is distributed under the same license as the atay package.
+# Mehdi ESSALEHI <messalehi2001@outlook.com>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: atay\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-03 19:09+0100\n"
+"Last-Translator: Mehdi ESSALEHI <messalehi2001@outlook.com>\n"
+"Language-Team: Mehdi ESSALEHI <messalehi2001@outlook.com>\n"
+"Language: Arabic\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: resources/layout/main.ui:89
+msgid "Running"
+msgstr "جارية"
+
+#: resources/layout/main.ui:113
+msgid "Finished"
+msgstr "مكتملة"
+
+#: resources/layout/main.ui:149
+msgid "No downloads yet"
+msgstr "لا يوجد تحميل بعد"
+
+#: resources/layout/main.ui:151
+msgid "Add a download from URL or use your browser extension to catch one"
+msgstr "أضف تحميلا من رابط أو استعمل متصفحك"
+
+#: resources/layout/main.ui:158
+msgid "Add from URL"
+msgstr "تحميل من رابط"
+
+#: resources/layout/main.ui:178
+msgid "Preferences"
+msgstr "الإعدادات"
+
+#: resources/layout/main.ui:182
+msgid "About"
+msgstr "حول"
+
+#: resources/layout/url_prompt.ui:6
+msgid "Enter URL"
+msgstr "أدخل الرابط"
+
+#: resources/layout/url_prompt.ui:33
+msgid "Invalid URL"
+msgstr "رابط باطل"
+
+#: resources/layout/url_prompt.ui:52 resources/layout/download_edit.ui:117
+#: resources/layout/preferences/category_editor.ui:83
+#: src/components/download_edit.py:76
+#: src/components/preferences/category_editor.py:48
+msgid "Cancel"
+msgstr "إلغاء"
+
+#: resources/layout/url_prompt.ui:58
+msgid "Add"
+msgstr "إضافة"
+
+#: resources/layout/download_item.ui:199
+msgid "Edit"
+msgstr "تحرير"
+
+#: resources/layout/download_item.ui:205
+msgid "Resume with new link"
+msgstr "الإستئناف برابط جديد"
+
+#: resources/layout/download_item.ui:209
+msgid "Copy download link"
+msgstr "نسخ رابط التحميل"
+
+#: resources/layout/download_item.ui:216
+msgid "Open file"
+msgstr "فتح الملف"
+
+#: resources/layout/download_item.ui:221
+msgid "Open containing folder"
+msgstr "فتح المجلد الحامل للملف"
+
+#: resources/layout/download_edit.ui:38
+msgid "URL"
+msgstr "الرابط"
+
+#: resources/layout/download_edit.ui:63
+msgid "File name"
+msgstr "إسم الملف"
+
+#: resources/layout/download_edit.ui:85
+#: resources/layout/preferences/category_editor.ui:43
+msgid "Directory"
+msgstr "الدليل"
+
+#: resources/layout/download_edit.ui:128
+#: resources/layout/preferences/category_editor.ui:89
+msgid "Save"
+msgstr "حفظ"
+
+#: resources/layout/about.ui:5
+#, fuzzy
+msgid "About Atay"
+msgstr "حول أتاي"
+
+#: resources/layout/about.ui:6
+msgid "Mehdi ESSALEHI"
+msgstr "المهدي الصالحي"
+
+#: resources/layout/about.ui:7
+msgid "A download manager for GNOME"
+msgstr "مدير التحميلات لGNOME"
+
+#: resources/layout/about.ui:11
+msgid "Copyright Ⓒ 2022 - Mehdi ESSALEHI"
+msgstr "جميع الحقوق محفوظة Ⓒ 2022 - المهدي الصالحي"
+
+#: resources/layout/preferences/window.ui:11
+msgid "General"
+msgstr "إعدادات عامة"
+
+#: resources/layout/preferences/window.ui:14
+msgid "Appearance"
+msgstr "المظهر"
+
+#: resources/layout/preferences/window.ui:17
+msgid "Force dark mode"
+msgstr "فرض الوضع المظلم"
+
+#: resources/layout/preferences/window.ui:18
+msgid "A quick toggle to force dark mode on the app"
+msgstr "مفتاح سريع لفرض الوضع المظلم"
+
+#: resources/layout/preferences/window.ui:31
+msgid "Downloads"
+msgstr "التحميلات"
+
+#: resources/layout/preferences/window.ui:34
+msgid "Timeout"
+msgstr "مهلة الإتصال"
+
+#: resources/layout/preferences/window.ui:35
+msgid "Time to give to a connection before dropping"
+msgstr "المهلة المسموحة للإتصال قبل الإعلان عن الفشل"
+
+#: resources/layout/preferences/window.ui:54
+msgid "Proxy"
+msgstr "وكيل الإتصال (Proxy)"
+
+#: resources/layout/preferences/window.ui:55
+msgid "Overrides system proxy settings"
+msgstr "إبطال إعدادات النظام للوكيل"
+
+#: resources/layout/preferences/window.ui:60
+msgid "Address"
+msgstr "العنوان"
+
+#: resources/layout/preferences/window.ui:71
+msgid "Port"
+msgstr "المنفذ"
+
+#: resources/layout/preferences/window.ui:91
+msgid "User agent"
+msgstr "عميل المستعمل (User Agent)"
+
+#: resources/layout/preferences/window.ui:92
+msgid "The user agent string sent in request headers"
+msgstr "عميل المستعمل المرسل في ترويسات الطلب"
+
+#: resources/layout/preferences/window.ui:108
+#: resources/layout/preferences/window.ui:121
+msgid "Categories"
+msgstr "الأصناف"
+
+#: resources/layout/preferences/window.ui:111
+msgid "Fallback settings"
+msgstr "الإعدادات الرجعية"
+
+#: resources/layout/preferences/window.ui:122
+msgid ""
+"Add and edit your categories for auto-sorting downloads. Note that changes "
+"only apply for new downloads."
+msgstr "أضف وحرر أصناف التحميلات للتنظيم التلقائي للملفات"
+
+#: resources/layout/preferences/category_row.ui:4
+msgid "Category"
+msgstr "صنف"
+
+#: resources/layout/preferences/category_editor.ui:7
+msgid "Edit category"
+msgstr "تحرير صنف"
+
+#: resources/layout/preferences/category_editor.ui:28
+msgid "Name"
+msgstr "الإسم"
+
+#: resources/layout/preferences/category_editor.ui:64
+msgid "Extensions"
+msgstr "الإمتدادات"
+
+#: src/components/download_edit.py:23
+msgid "Download"
+msgstr "تحميل"
+
+#: src/components/download_edit.py:24
+msgid "Cancel download"
+msgstr "إلغاء التحميل"
+
+#: src/components/download_edit.py:74
+msgid "Choose a directory"
+msgstr "إختر دليلا"
+
+#: src/components/download_edit.py:78
+#: src/components/preferences/category_editor.py:50
+msgid "Select"
+msgstr "إختيار"
+
+#: src/components/download_edit.py:102
+#: src/components/preferences/category_editor.py:69
+msgid "Permission error"
+msgstr "خطأ في الصلاحيات"
+
+#: src/components/download_edit.py:103
+#: src/components/preferences/category_editor.py:70
+msgid "{} is not writable"
+msgstr "لا يمكن الكتابة في الدليل {}"
+
+#: src/components/download_item.py:15
+msgid "Could not make request"
+msgstr "فشل الطلب"
+
+#: src/components/download_item.py:16
+msgid "Could not connect to server"
+msgstr "فشل الإتصال مع الخادم"
+
+#: src/components/download_item.py:17
+msgid "Connection timed out"
+msgstr "إنتهت مهلة الإتصال"
+
+#: src/components/download_item.py:18
+msgid "Could not resume download"
+msgstr "فشل استئناف التحميل"
+
+#: src/components/download_item.py:125
+msgid "An error occured"
+msgstr "حدث خطأ"
+
+#: src/components/preferences/category_editor.py:86
+msgid "Must not be empty"
+msgstr "لا يُترك فارغًا"
+
+#: src/controller.py:94
+msgid "Download finished"
+msgstr "انتهى التحميل"
+
+#: src/controller.py:153
+msgid "Delete with files"
+msgstr "حذف الملفات أيضا"
+
+#: src/controller.py:158
+msgid "Are you sure ?"
+msgstr "متأكد ؟"
+
+#: src/controller.py:159
+msgid "This will delete the selected download(s) from history."
+msgstr "ستُحذف التحميلات المختارة من السجل"
+
+#: src/download.py:330
+msgid "The file has been moved or deleted"
+msgstr "حُذف الملف أو نُقِل"
+
+#: src/download.py:333
+msgid "The file will be automatically opened once download is finished"
+msgstr "سيفتح الملف تلقائيا بعد انتهاء التحميل"
+
+#: src/main.py:123
+msgid "Download request headers"
+msgstr "ترويسات طلب التحميل"
+
+#: src/main.py:129
+msgid "Download link"
+msgstr "رابط التحميل"
+
+#: src/main.py:136
+msgid "Logs verbose level"
+msgstr "مستوى تسجيل أحداث التطبيق"

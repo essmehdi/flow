@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <template class="EmptyDownloads" parent="AdwStatusPage">
+        <style>
+            <class name="compact" />
+        </style>
+        <property name="icon-name">content-loading-symbolic</property>
+        <property name="title">No downloads yet</property>
+        <property name="description">Create a download from here or use your browser extension to catch one</property>
+    </template>
+</interface>

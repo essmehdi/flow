@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+	<requires lib="gtk" version="4.0" />
+	<requires lib="adwaita" version="1.0" />
+	<template class="DownloadItem" parent="GtkListBoxRow">
+		<property name="child">
+			<object class="GtkBox" id="root">
+				<property name="margin-start">10</property>
+				<property name="margin-top">10</property>
+				<property name="margin-bottom">10</property>
+				<property name="margin-end">10</property>
+				<property name="spacing">10</property>
+				<child>
+					<object class="GtkStack" id="left_stack">
+						<property name="transition-type">slide-right</property>
+						<child>
+							<object class="GtkStackPage">
+								<property name="name">action_mode</property>
+								<property name="child">
+									<object class="GtkStack" id="state_stack">
+										<child>
+											<object class="GtkStackPage">
+												<property name="name">pause</property>
+												<property name="child">
+													<object class="GtkButton" id="pause_button">
+														<property name="valign">center</property>
+														<property name="action-name">download.pause</property>
+														<child>
+															<object class="AdwButtonContent" id="pause_button_icon">
+																<property name="icon-name">media-playback-pause-symbolic</property>
+															</object>
+														</child>
+														<style>
+															<class name="circular" />
+														</style>
+													</object>
+												</property>
+											</object>
+										</child>
+										<child>
+											<object class="GtkStackPage">
+												<property name="name">resume</property>
+												<property name="child">
+													<object class="GtkButton" id="resume_button">
+														<property name="valign">center</property>
+														<property name="action-name">download.restart</property>
+														<child>
+															<object class="AdwButtonContent" id="resume_button_icon">
+																<property name="icon-name">media-playback-start-symbolic</property>
+															</object>
+														</child>
+														<style>
+															<class name="circular" />
+														</style>
+													</object>
+												</property>
+											</object>
+										</child>
+										<child>
+											<object class="GtkStackPage">
+												<property name="name">restart</property>
+												<property name="child">
+													<object class="GtkButton" id="restart_button">
+														<property name="valign">center</property>
+														<property name="action-name">download.restart</property>
+														<child>
+															<object class="AdwButtonContent" id="restart_button_icon">
+																<property name="icon-name">view-refresh-symbolic</property>
+															</object>
+														</child>
+														<style>
+															<class name="circular" />
+														</style>
+													</object>
+												</property>
+											</object>
+										</child>
+										<child>
+											<object class="GtkStackPage">
+												<property name="name">done</property>
+												<property name="child">
+													<object class="GtkImage" id="file_icon">
+														<property name="icon-name">text-x-generic</property>
+														<property name="icon-size">large</property>
+													</object>
+												</property>
+											</object>
+										</child>
+										<property name="name">pause</property>
+									</object>
+								</property>
+							</object>
+						</child>
+						<child>
+							<object class="GtkStackPage">
+								<property name="name">select_mode</property>
+								<property name="child">
+									<object class="GtkCheckButton" id="select_box">
+										<style>
+											<class name="selection-mode" />
+										</style>
+									</object>
+								</property>
+							</object>
+						</child>
+					</object>
+				</child>
+				<child>
+					<object class="GtkBox">
+						<property name="valign">center</property>
+						<property name="hexpand">1</property>
+						<property name="orientation">vertical</property>
+						<property name="spacing">2</property>
+						<child>
+							<object class="GtkLabel" id="filename_text">
+								<property name="halign">start</property>
+								<property name="ellipsize">middle</property>
+								<property name="lines">1</property>
+								<style>
+									<class name="title-4" />
+								</style>
+							</object>
+						</child>
+						<child>
+							<object class="GtkProgressBar" id="progress_bar">
+								<property name="visible">True</property>
+								<property name="fraction">0.0</property>
+								<property name="pulse-step">0.1</property>
+							</object>
+						</child>
+						<child>
+							<object class="GtkLabel" id="details_text">
+								<property name="halign">start</property>
+								<property name="hexpand">1</property>
+								<style>
+									<class name="dim-label" />
+								</style>
+							</object>
+						</child>
+					</object>
+				</child>
+				<child>
+					<object class="GtkStack" id="actions_stack">
+						<child>
+							<object class="GtkStackPage">
+								<property name="name">open</property>
+								<property name="child">
+									<object class="GtkButton" id="open_folder_button">
+										<property name="action-name">download.open-folder</property>
+										<property name="vexpand">0</property>
+										<property name="valign">center</property>
+										<child>
+											<object class="AdwButtonContent" id="open_folder_button_icon">
+												<property name="icon-name">folder-symbolic</property>
+											</object>
+										</child>
+										<style>
+											<class name="flat" />
+										</style>
+									</object>
+								</property>
+							</object>
+						</child>
+						<child>
+							<object class="GtkStackPage">
+								<property name="name">cancel</property>
+								<property name="child">
+									<object class="GtkButton" id="cancel_button">
+										<property name="action-name">download.delete</property>
+										<property name="vexpand">0</property>
+										<property name="valign">center</property>
+										<child>
+											<object class="AdwButtonContent" id="cancel_button_icon">
+												<property name="icon-name">window-close-symbolic</property>
+											</object>
+										</child>
+										<style>
+											<class name="flat" />
+										</style>
+									</object>
+								</property>
+							</object>
+						</child>
+						<child>
+							<object class="GtkStackPage">
+								<property name="name">empty</property>
+								<property name="child">
+									<object class="GtkBox" />
+								</property>
+							</object>
+						</child>
+					</object>
+				</child>
+			</object>
+		</property>
+	</template>
+	<menu id="download_menu">
+		<section>
+			<item>
+				<attribute name="label" translatable="yes">Edit</attribute>
+				<attribute name="action">download.edit</attribute>
+			</item>
+		</section>
+		<section>
+			<item>
+				<attribute name="label" translatable="yes">Resume with new link</attribute>
+				<attribute name="action">download.resume-new-link</attribute>
+			</item>
+			<item>
+				<attribute name="label" translatable="yes">Copy download link</attribute>
+				<attribute name="action">download.copy-url</attribute>
+				<attribute name="verb-icon">edit-copy-symbolic</attribute>
+			</item>
+		</section>
+		<section>
+			<item>
+				<attribute name="label" translatable="yes">Open file</attribute>
+				<attribute name="action">download.open-file</attribute>
+				<attribute name="verb-icon">document-open-symbolic</attribute>
+			</item>
+			<item>
+				<attribute name="label" translatable="yes">Open containing folder</attribute>
+				<attribute name="action">download.open-folder</attribute>
+				<attribute name="verb-icon">folder-open-symbolic</attribute>
+			</item>
+		</section>
+	</menu>
+</interface>

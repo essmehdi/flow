@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <object class="AdwPreferencesRow" id="add_row">
+        <child>
+            <object class="GtkButton" id="add_button">
+                <property name="icon-name">list-add-symbolic</property>
+                <property name="halign">fill</property>
+                <property name="hexpand">1</property>
+                <style>
+                    <class name="flat" />
+                </style>
+            </object>
+        </child>
+    </object>
+</interface>

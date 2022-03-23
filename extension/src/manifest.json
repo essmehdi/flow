@@ -1,0 +1,12 @@
+{
+    "name": "Atay Intercepter",
+    "description": "Download intercepter for Atay",
+    "version": "1.0",
+    "manifest_version": 2,
+    "background": {
+        "scripts": ["catcher.js"]
+    },
+    "permissions": [
+        "downloads", "nativeMessaging", "webRequest", "<all_urls>", "webRequestBlocking", "storage"
+    ]
+}

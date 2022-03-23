@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="URLPrompt" parent="AdwWindow">
+    <property name="modal">True</property>
+    <property name="resizable">False</property>
+    <property name="title" translatable="yes">Enter URL</property>
+    <property name="default-width">300</property>
+    <property name="content">
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="spacing">20</property>
+        <child>
+          <object class="GtkHeaderBar">
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="margin-end">20</property>
+            <property name="margin-start">20</property>
+            <property name="spacing">5</property>
+            <child>
+              <object class="GtkEntry" id="url_entry">
+                <property name="focusable">1</property>
+                <signal name="changed" handler="url_text_changed" swapped="no" />
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="error_text">
+                <property name="label" translatable="yes">Invalid URL</property>
+                <property name="visible">False</property>
+                <property name="halign">start</property>
+                <attributes>
+                  <attribute name="foreground" value="#ef4444" />
+                </attributes>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <property name="margin-bottom">20</property>
+            <property name="halign">center</property>
+            <property name="spacing">10</property>
+            <child>
+              <object class="GtkButton" id="cancel_button">
+                <property name="action-name">prompt.cancel</property>
+                <property name="label" translatable="yes">Cancel</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="confirm_button">
+                <property name="action-name">prompt.confirm</property>
+                <property name="label" translatable="yes">Add</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </property>
+  </template>
+</interface>

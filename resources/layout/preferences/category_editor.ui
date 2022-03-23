@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template parent="AdwWindow" class="CategoryEditor">
+    <property name="modal">True</property>
+    <property name="resizable">False</property>
+    <property name="default-width">300</property>
+    <property name="title" translatable="yes">Edit category</property>
+    <property name="content">
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkHeaderBar">
+            <style>
+              <class name="flat"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="margin-start">20</property>
+            <property name="margin-end">20</property>
+            <property name="margin-top">20</property>
+            <property name="margin-bottom">20</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Name</property>
+                <property name="margin-bottom">5</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="name_entry">
+                <property name="focusable">1</property>
+                <property name="halign">fill</property>
+                <property name="margin-bottom">10</property>
+                <signal name="changed" handler="entry_edit" />
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Directory</property>
+                <property name="margin-bottom">5</property>
+              </object>
+            </child>
+            <child>
+              <object class="FileChooserButton" id="path_button">
+                <property name="halign">fill</property>
+                <property name="margin-bottom">10</property>
+              </object>
+              <!-- <object class="GtkButton" id="path_button">
+                <property name="halign">fill</property>
+                <property name="margin-bottom">10</property>
+                <property name="child">
+                  <object class="AdwButtonContent" id="path_button_content">
+                    <property name="icon-name">folder-symbolic</property>
+                    <property name="label">Select a folder</property>
+                    <property name="halign">center</property>
+                  </object>
+                </property>
+                <signal name="clicked" handler="path_button_clicked" />
+              </object> -->
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Extensions</property>
+                <property name="margin-bottom">5</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="extensions_entry">
+                <property name="focusable">1</property>
+                <property name="halign">fill</property>
+                <property name="margin-bottom">20</property>
+                <signal name="changed" handler="entry_edit" />
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <property name="halign">center</property>
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Cancel</property>
+                    <property name="action-name">cedit.cancel</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Save</property>
+                    <property name="action-name">cedit.save</property>
+                    <style>
+                      <class name="suggested-action" />
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </property>
+  </template>
+</interface>
