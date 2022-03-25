@@ -4,19 +4,28 @@ if (typeof browser === "undefined") {
 
 let requests = [];
 
+browser.runtime.onMessage.addListener(function (request, _, __) {
+    browser.runtime.sendNativeMessage(
+        "com.github.essmehdi.atay", {
+            "url": request.url,
+            "headers": []
+        }
+    );
+});
+
 browser.webRequest.onHeadersReceived.addListener(function (details) {
-    if (details.type !== 'main_frame') return;
+    if (details.type !== 'main_frame' && details.type !== 'sub_frame') return;
     const headers = details.responseHeaders;
     if (headers.find(header => header.name === 'content-disposition')) {
         browser.storage.local.get(details.requestId).then(item => {
-            console.log(item);
             browser.runtime.sendNativeMessage(
                 "com.github.essmehdi.atay", {
                     "url": details.url,
-                    "headers": item
+                    "headers": item[details.requestId]
                 }
             );
         });
+        browser.storage.local.remove(details.requestId);
         return { cancel: true };
     }
 }, { urls: ['<all_urls>'] }, ['responseHeaders', 'blocking']);
@@ -50,11 +59,11 @@ browser.webRequest.onSendHeaders.addListener(function (details) {
 }, { urls: ["<all_urls>"] }, ['requestHeaders']);
 
 browser.webRequest.onCompleted.addListener(function (details) {
-    browser.storage.local.unset(details.requestId);
+    browser.storage.local.remove(details.requestId);
 }, { urls: ["<all_urls>"] }, ['responseHeaders']);
 
 browser.webRequest.onErrorOccurred.addListener(function (details) {
-    browser.storage.local.unset(details.requestId);
+    browser.storage.local.remove(details.requestId);
 }, { urls: ["<all_urls>"] });
 
 /*browser.downloads.onCreated.addListener(item => {

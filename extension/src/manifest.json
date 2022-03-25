@@ -3,10 +3,22 @@
     "description": "Download intercepter for Atay",
     "version": "1.0",
     "manifest_version": 2,
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "flowcatcher.essmehdi@github.com"
+        }
+    },
+    "content_scripts": [
+        {
+            "matches": ["http://*/*", "https://*/*"],
+            "js": ["links.js"],
+            "run_at": "document_end"
+        }
+    ],
     "background": {
         "scripts": ["catcher.js"]
     },
     "permissions": [
-        "downloads", "nativeMessaging", "webRequest", "<all_urls>", "webRequestBlocking", "storage"
+        "downloads", "nativeMessaging", "webRequest", "webRequestBlocking", "storage", "cookies", "<all_urls>"
     ]
 }
