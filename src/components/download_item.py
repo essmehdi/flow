@@ -115,7 +115,7 @@ class DownloadItem(Gtk.ListBoxRow):
 
     def on_filename_change(self, *_):
         if self.filename == "":
-            self.filename_text.set_label("...")
+            self.filename_text.set_label("Loading...")
         else:
             self.filename_text.set_label(self.filename)
 
