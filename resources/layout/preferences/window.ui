@@ -29,6 +29,7 @@
         <child>
           <object class="AdwPreferencesGroup" id="downloads_group">
             <property name="title" translatable="yes">Downloads</property>
+            <property name="description" translatable="yes">Changes are applied for new downloads</property>
             <child>
               <object class="AdwActionRow" id="connection_timeout">
                 <property name="title" translatable="yes">Timeout</property>
@@ -89,7 +90,7 @@
             <child>
               <object class="AdwActionRow" id="user_agent">
                 <property name="title" translatable="yes">User agent</property>
-                <property name="subtitle" translatable="yes">The user agent string sent in request headers</property>
+                <property name="subtitle" translatable="yes">The user agent string sent in request headers. Note that this is not applied to downloads coming from your browser.</property>
                 <property name="activatable-widget">user_agent_entry</property>
                 <child>
                   <object class="GtkEntry" id="user_agent_entry">
@@ -108,10 +109,16 @@
         <property name="title" translatable="yes">Categories</property>
         <child>
           <object class="AdwPreferencesGroup" id="fallback_group">
-            <property name="title" translatable="yes">Fallback settings</property>
             <child>
               <object class="AdwActionRow" id="fallback_directory">
-                <property name="title">Fallback directory</property>
+                <property name="title" translatable="yes">Default directory</property>
+                <property name="subtitle" translatable="yes">Directory where to put files that don&#x27;t match any category</property>
+                <property name="activatable-widget">fallback_directory_button</property>
+                <child>
+                  <object class="FileChooserButton" id="fallback_directory_button">
+                    <property name="valign">center</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
