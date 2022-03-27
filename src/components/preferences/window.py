@@ -16,6 +16,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
     connection_proxy_port_spin = Gtk.Template.Child()
     user_agent_entry = Gtk.Template.Child()
     force_dark_toggle = Gtk.Template.Child()
+    fallback_directory_button = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -85,5 +86,10 @@ class PreferencesWindow(Adw.PreferencesWindow):
                 "widget": self.force_dark_toggle,
                 "key": "force-dark",
                 "property": "active"
+            },
+            {
+                "widget": self.fallback_directory_button,
+                "key": "fallback-directory",
+                "property": "value"
             }
         ]
