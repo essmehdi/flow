@@ -131,7 +131,7 @@
 						<child>
 							<object class="GtkLabel" id="details_text">
 								<property name="halign">start</property>
-								<property name="hexpand">1</property>
+								<property name="wrap">True</property>
 								<style>
 									<class name="dim-label" />
 								</style>
