@@ -35,6 +35,7 @@ class Download(GObject.Object):
     STATUS_CONNECTION_ERROR = 'connection_error'
     STATUS_INIT = 'init'
     STATUS_PAUSED = 'paused'
+    STATUS_MOVING = 'moving'
 
     # Download path fallback
     DOWNLOAD_FALLBACK_PATH = "~/Downloads"
@@ -111,8 +112,12 @@ class Download(GObject.Object):
             self.worker.setopt(pycurl.URL, self.url)
             self.worker.setopt(pycurl.FOLLOWLOCATION, True)
             if len(self.custom_headers):
-                logging.debug("Custom headers detected")
                 self.worker.setopt(pycurl.HTTPHEADER, self.custom_headers.split(','))
+        if self.status == Download.STATUS_MOVING:
+            if os.path.exists(self.tmp):
+                self._move_file()
+            else:
+                self._finalize()
         if self.status == Download.STATUS_STARTED:
             # Means probably that program closed unexpectedly.
             # Therefore, change status value to 'paused'
@@ -226,6 +231,7 @@ class Download(GObject.Object):
         except pycurl.error as error:
             self._handle_error(error.args)
         else:
+            self.date_finished = GLib.DateTime.new_now_local().to_unix()
             if self.size < 0:
                 self.size = os.path.getsize(self.tmp)
             while self.edit_mode and not self.cancel:
@@ -235,13 +241,10 @@ class Download(GObject.Object):
                 self.cancelled = True
                 self.worker.close()
                 return
-            self.status = Download.STATUS_DONE
-            self.date_finished = GLib.DateTime.new_now_local().to_unix()
             self.worker.close()
+            self.status = Download.STATUS_MOVING
             self._move_file()
-            from .controller import DownloadsController # To avoid circular import
-            GLib.idle_add(lambda: DownloadsController.get_instance().download_finished(self.id))
-            logging.info("Download finished")
+            self._finalize()
 
     def _move_file(self):
         output_path = self.get_output_file_path()
@@ -249,7 +252,7 @@ class Download(GObject.Object):
             count = 1
             while True:
                 name, ext = os.path.splitext(self.filename)
-                name = name + f" ({count})"
+                name += f" ({count})"
                 dup_filename = name + ext
                 if not os.path.exists(os.path.join(self.output_directory, dup_filename)):
                     self.filename = dup_filename
@@ -260,6 +263,12 @@ class Download(GObject.Object):
         shutil.move(self.tmp, output_path)
         if self.open_on_finish:
             self.open_file()
+
+    def _finalize(self):
+        self.status = Download.STATUS_DONE
+        from .controller import DownloadsController # To avoid circular import
+        GLib.idle_add(lambda: DownloadsController.get_instance().download_finished(self.id))
+        logging.info("Download finished")
 
     def _handle_error(self, args):
         logging.exception(f"Error while performing cURL: {args[1]}")
@@ -279,13 +288,10 @@ class Download(GObject.Object):
                 self.status = Download.STATUS_CONNECTION_ERROR
 
     def get_output_file_path(self):
-        if self.status == 'done':
-            if self.output_directory:
-                return os.path.join(self.output_directory, self.filename)
-            else:
-                logging.error("Could not get file path")
+        if self.output_directory:
+            return os.path.join(self.output_directory, self.filename)
         else:
-            logging.error("Cannot get file while download is running")
+            logging.error("Could not get file path")
 
     def get_file(self):
         file_path = self.get_output_file_path()
