@@ -113,9 +113,9 @@ class DownloadItem(Gtk.ListBoxRow):
         else:
             self.left_stack.set_visible_child_name('action_mode')
 
-    def on_filename_change(self, *_):
+    def on_filename_change(self, *__):
         if self.filename == "":
-            self.filename_text.set_label("Loading...")
+            self.filename_text.set_label(_("Loading..."))
         else:
             self.filename_text.set_label(self.filename)
 
@@ -140,6 +140,11 @@ class DownloadItem(Gtk.ListBoxRow):
             self.actions_stack.set_visible_child_name('cancel')
             self.details_text.set_label(DownloadItem.ERROR_MESSAGES.get(self.status, _("An error occured")))
             self.actions_activator('restart', 'delete')
+        elif self.status == "moving":
+            self.details_text.set_label(_("Moving file..."))
+            self.state_stack.set_visible_child_name('pause')
+            self.actions_stack.set_visible_child_name('cancel')
+            self.actions_activator()
         elif self.status == "done":
             self.state_stack.set_visible_child_name('done')
             self.actions_stack.set_visible_child_name('open')
