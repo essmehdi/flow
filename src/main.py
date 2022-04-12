@@ -19,10 +19,10 @@ from gettext import gettext as _
 import argparse
 
 
-@Gtk.Template(resource_path="/com/github/essmehdi/atay/layout/main.ui")
-class AtayWindow(Adw.ApplicationWindow):
+@Gtk.Template(resource_path="/com/github/essmehdi/flow/layout/main.ui")
+class FlowWindow(Adw.ApplicationWindow):
     
-    __gtype_name__ = "RitzerWindow"
+    __gtype_name__ = "FlowWindow"
     
     clamp = Gtk.Template.Child()
     content = Gtk.Template.Child()
@@ -35,6 +35,7 @@ class AtayWindow(Adw.ApplicationWindow):
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.about = None
         # New download action
         self.new_action = Gio.SimpleAction.new('new', None)
         self.new_action.connect('activate', self.show_url_prompt)
@@ -65,7 +66,7 @@ class AtayWindow(Adw.ApplicationWindow):
         self.prompt = None
         self.preferences = None
         # Save window state
-        settings = Gio.Settings("com.github.essmehdi.atay")
+        settings = Gio.Settings("com.github.essmehdi.flow")
         settings.bind('window-width', self, 'default-width', Gio.SettingsBindFlags.DEFAULT)
         settings.bind('window-height', self, 'default-height', Gio.SettingsBindFlags.DEFAULT)
         settings.bind('window-maximized', self, 'maximized', Gio.SettingsBindFlags.DEFAULT)
@@ -104,10 +105,10 @@ class MainApplication(Adw.Application):
     version = GObject.Property(type=str, default="", flags=GObject.ParamFlags.READWRITE)
 
     def __init__(self, version, **kwargs):
-        super().__init__(application_id="com.github.essmehdi.atay", **kwargs)
+        super().__init__(application_id="com.github.essmehdi.flow", **kwargs)
         self.window = None
         # Initialize libnotify
-        Notify.init('Atay')
+        Notify.init('Flow')
         self.version = version
 
     def do_activate(self):
@@ -115,7 +116,7 @@ class MainApplication(Adw.Application):
         style_manager.set_color_scheme(Adw.ColorScheme.FORCE_DARK if Settings.get().force_dark else Adw.ColorScheme.PREFER_LIGHT)
         self.window = self.props.active_window
         if not self.window:
-            self.window = AtayWindow(application=self)
+            self.window = FlowWindow(application=self)
         self.window.show()
 
     def do_command_line(self, acl):

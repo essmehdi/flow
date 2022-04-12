@@ -7,8 +7,8 @@ prefix = environ.get('MESON_INSTALL_PREFIX', '/usr/local')
 datadir = path.join(prefix, 'share')
 destdir = environ.get('DESTDIR', '')
 
-chmod(path.join(prefix, 'bin/atay'), 0o755)
-chmod(path.join(prefix, 'bin/atay-connector'), 0o755)
+chmod(path.join(prefix, 'bin/flow'), 0o755)
+chmod(path.join(prefix, 'bin/flow-connector'), 0o755)
 
 if not destdir:
     print('Updating icon cache...')

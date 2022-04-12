@@ -1,12 +1,12 @@
-# POT File for Atay.
+# POT File for Flow.
 # Copyright (C) 2022 Mehdi ESSALEHI
-# This file is distributed under the same license as the atay package.
+# This file is distributed under the same license as the flow package.
 # Mehdi ESSALEHI <messalehi2001@outlook.com>, 2022.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: atay\n"
+"Project-Id-Version: flow\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-03-03 19:09+0100\n"
 "Last-Translator: Mehdi ESSALEHI <messalehi2001@outlook.com>\n"
@@ -103,7 +103,7 @@ msgstr "حفظ"
 
 #: resources/layout/about.ui:5
 #, fuzzy
-msgid "About Atay"
+msgid "About Flow"
 msgstr "حول أتاي"
 
 #: resources/layout/about.ui:6

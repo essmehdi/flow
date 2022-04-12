@@ -6,7 +6,7 @@ from gi.repository import GLib
 class DownloadNotFound(Exception):
     pass
 
-class StatusManager():
+class StatusManager:
 
     @staticmethod
     def add_to_finished(id: str, download: dict):
@@ -25,13 +25,13 @@ class StatusManager():
     @staticmethod
     def get_status_file(finished=True):
         home_dir = GLib.get_home_dir()
-        atay_status_file = os.path.join(home_dir, ".atay/finished.json" if finished else ".atay/running.json")
-        if not os.path.exists(os.path.dirname(atay_status_file)):
-            os.makedirs(os.path.dirname(atay_status_file), exist_ok=True)
-        if not os.path.exists(atay_status_file) or os.path.getsize(atay_status_file) == 0:
-            with open(atay_status_file, "w") as file:
+        flow_status_file = os.path.join(home_dir, ".flow/finished.json" if finished else ".flow/running.json")
+        if not os.path.exists(os.path.dirname(flow_status_file)):
+            os.makedirs(os.path.dirname(flow_status_file), exist_ok=True)
+        if not os.path.exists(flow_status_file) or os.path.getsize(flow_status_file) == 0:
+            with open(flow_status_file, "w") as file:
                 file.write("{}")
-        return open(atay_status_file, 'r+')
+        return open(flow_status_file, 'r+')
 
     @staticmethod
     def get_downloads(finished):
@@ -67,6 +67,7 @@ class StatusManager():
             else:
                 raise DownloadNotFound(f"Cannot find a download with ID: {id}")
 
+    @staticmethod
     def remove_download(id: str, finished: bool, delete_file:bool = False):
         to_delete = None
         with StatusManager.get_status_file(finished) as file:

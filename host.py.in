@@ -16,4 +16,4 @@ def get_message():
 while True:
     message = get_message()
     if type(message) == dict:
-        subprocess.Popen([ "atay", "-u", message["url"], "-H", json.dumps(message["headers"]) ])
+        subprocess.Popen([ "flow", "-u", message["url"], "-H", json.dumps(message["headers"]) ])

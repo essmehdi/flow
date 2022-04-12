@@ -7,7 +7,7 @@ from ..controller import DownloadsController
 from ..utils import convert_size, get_eta
 
 
-@Gtk.Template(resource_path="/com/github/essmehdi/atay/layout/download_item.ui")
+@Gtk.Template(resource_path="/com/github/essmehdi/flow/layout/download_item.ui")
 class DownloadItem(Gtk.ListBoxRow):
     __gtype_name__ = "DownloadItem"
 
@@ -20,6 +20,12 @@ class DownloadItem(Gtk.ListBoxRow):
 
     DATE_TAG_TODAY = _("Today")
     DATE_TAG_YESTERDAY = _("Yesterday")
+    DATE_TAG_LAST_WEEK = _("Last week")
+    DATE_TAG_THIS_MONTH = _("This month")
+    DATE_TAG_LAST_MONTH = _("Last month")
+    DATE_TAG_THIS_YEAR = _("This year")
+    DATE_TAG_LAST_YEAR = _("Last year")
+    DATE_TAG_MORE_YEAR = _("More than a year")
 
     filename_text = Gtk.Template.Child()
     details_text = Gtk.Template.Child()
@@ -46,6 +52,8 @@ class DownloadItem(Gtk.ListBoxRow):
     date_started        = GObject.Property(type=GObject.GType.from_name('gulong'), default=0, flags=GObject.ParamFlags.READWRITE)
     date_finished       = GObject.Property(type=GObject.GType.from_name('gulong'), default=0, flags=GObject.ParamFlags.READWRITE)
     date_tag            = GObject.Property(type=str, default="", flags=GObject.ParamFlags.READWRITE)
+    selected            = GObject.Property(type=bool, default=False, flags=GObject.ParamFlags.READWRITE)
+    selection_mode      = GObject.Property(type=bool, default=False, flags=GObject.ParamFlags.READWRITE)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -82,36 +90,26 @@ class DownloadItem(Gtk.ListBoxRow):
         self.connect('notify::progress', lambda *_: GLib.idle_add(self.on_progress_change))
         self.connect('notify::size', lambda *_: GLib.idle_add(self.on_size_change))
         self.connect('notify::resumable', lambda *_: GLib.idle_add(self.on_status_change))
-        self.connect('notify::parent', self.parent)
-        self.connect('notify::date-finished', self.date_finished_changed)
-        # Make unselectable until it's done
-        self.set_selectable(False)
+        self.connect_after('notify::selected', self.on_selected_change)
+        self.connect_after('notify::selection-mode', self.on_selection_mode_change)
+        self.select_box.set_sensitive(False)
+        # Sync selected status with checkbox
+        self.bind_property("selected", self.select_box, "active", GObject.BindingFlags.BIDIRECTIONAL)
 
-    def date_finished_changed(self, *_):
-        # TODO: Move this into the controller so that info would be synced
-        if self.date_finished != 0:
-            today: GLib.DateTime = GLib.DateTime.new_now_local()
-            finished: GLib.DateTime = GLib.DateTime.new_from_unix_local(self.date_finished)
-            logging.debug(finished.format('%x'))
-            delta = today.difference(finished) // 10**6 # From microseconds to seconds
-            hours = delta / 3600
-            if 0 <= hours < 24:
-                if finished.get_hour() > today.get_hour():
-                    self.date_tag = DownloadItem.DATE_TAG_YESTERDAY
-                else:
-                    self.date_tag = DownloadItem.DATE_TAG_TODAY
-            else:
-                self.date_tag = finished.format('%x')
+    def on_selected_change(self, *_):
+        if self.selected:
+            DownloadsController.get_instance().select(self)
+        else:
+            DownloadsController.get_instance().unselect(self)
 
-    def parent(self, *_):
-        if self.get_parent() is not None:
-            self.get_parent().connect('notify::selection-mode', self.on_select_mode_change)
-
-    def on_select_mode_change(self, list_box, *_):
-        if list_box.get_selection_mode() == Gtk.SelectionMode.MULTIPLE and self.get_selectable():
+    def on_selection_mode_change(self, *_):
+        if self.selection_mode:
             self.left_stack.set_visible_child_name('select_mode')
         else:
             self.left_stack.set_visible_child_name('action_mode')
+
+    def handle_long_press(self, *_):
+        DownloadsController.get_instance().enable_selection()
 
     def on_filename_change(self, *__):
         if self.filename == "":
@@ -153,7 +151,6 @@ class DownloadItem(Gtk.ListBoxRow):
                 (convert_size(self.size) if self.size > 0 else '') + (" • " if self.category and self.size > 0 else '') + self.category
             )
             self.set_selectable(True)
-            self.on_select_mode_change(self.get_parent())
             self.file_icon.set_from_gicon(Gio.content_type_get_icon(self.get_file_mimetype()))
 
     def actions_activator(self, *actions):
@@ -194,25 +191,21 @@ class DownloadItem(Gtk.ListBoxRow):
     def on_size_change(self, *_):
         self.progress_bar.set_visible(self.size > 0 and self.status in ('downloading', 'paused'))
 
-    def handle_long_press(self, *_):
-        if self.get_selectable():
-            parent = self.get_parent()
-            parent.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
-            if not self.is_selected():
-                parent.select_row(self)
-
     def handle_press(self, controller, clicks, *__):
         if controller.get_button() == 3:
             self.menu.popup()
         elif controller.get_button() == 1:
-            if clicks == 2 and self.get_parent().get_selection_mode() == Gtk.SelectionMode.NONE:
+            if clicks == 2 and not self.selection_mode:
                 self.actions.lookup_action('open-file').activate()
+            elif clicks == 1:
+                logging.debug("Single click")
+                self.selected = not self.selected
 
     def open_folder(self, *_):
         DownloadsController.get_instance().open(self.id, True)
 
     def prepare_dnd(self, *_):
-        if self.status == 'done':
+        if self.status == 'done' and not self.selection_mode:
             file = DownloadsController.get_instance().get_file(self.id)
             if file:
                 return Gdk.ContentProvider.new_union([

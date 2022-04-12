@@ -1,7 +1,7 @@
-project('atay', version: '0.0.1',)
+project('flow', version: '0.0.1',)
 
 pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
-moduledir = join_paths(pkgdatadir, 'atay')
+moduledir = join_paths(pkgdatadir, 'flow')
 
 subdir('resources')
 subdir('src')
@@ -10,7 +10,7 @@ subdir('po')
 
 configure_file(
   input: 'load.py.in',
-  output: 'atay',
+  output: 'flow',
   configuration: conf,
   install: true,
   install_dir: get_option('bindir')
@@ -18,7 +18,7 @@ configure_file(
 
 configure_file(
   input: 'host.py.in',
-  output: 'atay-connector',
+  output: 'flow-connector',
   configuration: conf,
   install: true,
   install_dir: get_option('bindir')

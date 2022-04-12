@@ -2,8 +2,8 @@ pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.proje
 gnome = import('gnome')
 
 gnome.compile_resources(
-    'atay',
-    'com.github.essmehdi.atay.gresource.xml',
+    'flow',
+    'com.github.essmehdi.flow.gresource.xml',
     gresource_bundle: true,
     install: true,
     install_dir: pkgdatadir,
@@ -11,12 +11,12 @@ gnome.compile_resources(
 
 subdir('icons')
 
-install_data('com.github.essmehdi.atay.gschema.xml',
+install_data('com.github.essmehdi.flow.gschema.xml',
     install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
 )
 
 install_data(
-  'com.github.essmehdi.atay.desktop',
+  'com.github.essmehdi.flow.desktop',
   install_dir: join_paths(get_option('datadir'), 'applications')
 )
 

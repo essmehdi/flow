@@ -1,6 +1,6 @@
 from gi.repository import Gtk
 
-@Gtk.Template(resource_path="/com/github/essmehdi/atay/layout/about.ui")
+@Gtk.Template(resource_path="/com/github/essmehdi/flow/layout/about.ui")
 class AboutDialog(Gtk.AboutDialog):
     __gtype_name__ = 'AboutDialog'
 

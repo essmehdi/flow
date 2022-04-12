@@ -61,6 +61,10 @@ class Download(GObject.Object):
 
     def __init__(self, id: str = None, status: dict = None, url: str = None, headers: dict = None, raw_headers: str = None):
         GObject.Object.__init__(self)
+        # Update fallback path based on user settings
+        fallback_directory = Settings.get().fallback_directory
+        if fallback_directory:
+            Download.DOWNLOAD_FALLBACK_PATH = fallback_directory
         # UI item for easy access
         self.row = None
         # Edit mode flag

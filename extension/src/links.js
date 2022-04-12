@@ -1,10 +1,8 @@
 document.querySelectorAll("a").forEach(link => link.addEventListener("click", event => {
     console.log("Clicked");
-    const clickedLink = event.target;
-    const download = clickedLink.getAttribute("download");
-    if (download !== null) {
+    if (link.hasAttribute("download")) {
         event.preventDefault();
-        const url = clickedLink.getAttribute("href");
+        const url = link.getAttribute("href");
         var final = url;
         try {
             new URL(final);

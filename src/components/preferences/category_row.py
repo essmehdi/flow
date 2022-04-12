@@ -6,7 +6,7 @@ from gi.repository import Gtk, Adw
 from gettext import gettext as _
 
 
-@Gtk.Template(resource_path="/com/github/essmehdi/atay/layout/preferences/category_row.ui")
+@Gtk.Template(resource_path="/com/github/essmehdi/flow/layout/preferences/category_row.ui")
 class CategoryRow(Adw.ActionRow):
     __gtype_name__ = "CategoryRow"
 

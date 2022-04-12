@@ -1,13 +1,15 @@
 from .download import Download
 from .status_manager import StatusManager
-from gi.repository import Gio, Gtk, GObject, Gdk, Notify
+from gi.repository import Gio, Gtk, GObject, Gdk, Notify, GLib
 from gettext import gettext as _
 import logging
 
 
-class DownloadsController:
-
+class DownloadsController(GObject.GObject):
+    __gtype_name__ = "DownloadsController"
     __instance = None
+
+    selection_mode = GObject.Property(type=bool, default=False, flags=GObject.ParamFlags.READWRITE)
 
     @staticmethod
     def get_instance():
@@ -20,6 +22,7 @@ class DownloadsController:
             raise Exception("Cannot make another instance")
         else:
             DownloadsController.__instance = self
+        GObject.GObject.__init__(self)
         self.finished_downloads = Gio.ListStore.new(Download)
         self.running_downloads = Gio.ListStore.new(Download)
 
@@ -36,12 +39,13 @@ class DownloadsController:
         self.clamp = None
         self.content = None
         self.delete_action = None
+        self.selected_downloads = set()
+        self.empty_stack = None
 
     def load_ui(self, window):
         # Register UI components
         self.finished_list_box = window.finished_downloads_list
         self.running_list_box = window.running_downloads_list
-        self.finished_list_box.connect('selected-rows-changed', self._selected_rows_changed)
         self.clamp = window.clamp
         self.content = window.content
         self.finished_list_box.bind_model(self.finished_downloads, self._binder)
@@ -91,12 +95,12 @@ class DownloadsController:
         self._update_ui()
         # Notify user
         if not Notify.is_initted():
-            Notify.init('com.github.essmehdi.atay')
+            Notify.init('com.github.essmehdi.flow')
         notification = Notify.Notification.new(_("Download finished"), download.filename, "go-down-symbolic")
         notification.set_category("transfer.complete")
         notification.show()
     
-    def add_from_url(self, url, headers = None, raw_headers = None):
+    def add_from_url(self, url, headers=None, raw_headers=None):
         self.running_downloads.insert(0, Download(url=url, headers=headers, raw_headers=raw_headers))
         self._update_ui()
 
@@ -129,11 +133,24 @@ class DownloadsController:
     def delete_selected_rows(self, _, __, window):
         self._delete_dialog(window)
 
+    def enable_selection(self):
+        self.delete_action.set_enabled(True)
+        self.selection_mode = True
+
+    def disable_selection(self):
+        self.delete_action.set_enabled(False)
+        self.selected_downloads = set()
+        self.selection_mode = False
+
     def select(self, row):
-        self.finished_list_box.select_row(row)
+        self.selected_downloads.add(row.id)
+        logging.debug(self.selected_downloads)
 
     def unselect(self, row):
-        self.finished_list_box.unselect_row(row)
+        self.selected_downloads.remove(row.id)
+        logging.debug(self.selected_downloads)
+        if len(self.selected_downloads) == 0:
+            self.disable_selection()
 
     def _delete_with_index(self, index, running=False, delete_file=False):
         if running:
@@ -177,11 +194,55 @@ class DownloadsController:
             self._confirm_delete_selected(delete_files_response)
     
     def _confirm_delete_selected(self, delete_files=False):
-        selected_list = self.finished_list_box.get_selected_rows()
+        selected_list = [ self._get_download(id) for id in self.selected_downloads ]
         for row in selected_list:
             self._delete_with_id(row.id, delete_files)
+        self.disable_selection()
+
+    def _update_row_date_tag(self, row):
+        if row.date_finished != 0:
+            today: GLib.DateTime = GLib.DateTime.new_now_local()
+            finished: GLib.DateTime = GLib.DateTime.new_from_unix_local(row.date_finished)
+            delta = today.difference(finished) // 10**6 # From microseconds to seconds
+            hours = delta / 3600
+            if 0 <= hours < 24:
+                # Day scale
+                if finished.get_hour() > today.get_hour():
+                    row.date_tag = row.DATE_TAG_YESTERDAY
+                else:
+                    row.date_tag = row.DATE_TAG_TODAY
+            elif hours < 48 and finished.get_hour() < today.get_hour():
+                row.date_tag = row.DATE_TAG_YESTERDAY
+            else:
+                # Weeks scale
+                if hours < 168:
+                    if finished.get_day_of_week() > today.get_day_of_week():
+                        row.date_tag = row.DATE_TAG_LAST_WEEK
+                    else:
+                        row.date_tag = finished.format('%A')
+                elif hours < 336 and finished.get_day_of_week() < today.get_day_of_week():
+                    row.date_tag = row.DATE_TAG_LAST_WEEK
+                else:
+                    # Month scale
+                    days = hours // 24
+                    if days < 62:
+                        month_delta = today.get_month() - finished.get_month()
+                        if month_delta == 1 or month_delta == -11:
+                            row.date_tag = row.DATE_TAG_LAST_MONTH
+                        elif month_delta == 0:
+                            row.date_tag = row.DATE_TAG_THIS_MONTH
+                    else:
+                        # Year scale
+                        year_delta = today.get_year() - finished.get_year()
+                        if year_delta == 1:
+                            row.date_tag = row.DATE_TAG_LAST_YEAR
+                        elif year_delta == 0:
+                            row.date_tag = row.DATE_TAG_THIS_YEAR
+                        else:
+                            row.date_tag = row.DATE_TAG_MORE_YEAR
 
     def _finished_header_function(self, row, before, *_):
+        self._update_row_date_tag(row)
         if before is None or row.date_tag != before.date_tag:
             label = Gtk.Label()
             label.set_label(row.date_tag)
@@ -242,26 +303,9 @@ class DownloadsController:
         item.bind_property("date_started", row, "date_started", GObject.BindingFlags.SYNC_CREATE)
         item.bind_property("date_initiated", row, "date_initiated", GObject.BindingFlags.SYNC_CREATE)
         item.bind_property("date_finished", row, "date_finished", GObject.BindingFlags.SYNC_CREATE)
+        DownloadsController.get_instance().bind_property("selection_mode", row, "selection_mode", GObject.BindingFlags.SYNC_CREATE)
         item.row = row
         return row
-
-    def _selected_rows_changed(self, _):
-        row = self.finished_list_box.get_first_child()
-        selected_count = 0
-        while row is not None:
-            from .components.download_item import DownloadItem
-            if isinstance(row, DownloadItem):
-                if row.is_selected():
-                    selected_count += 1
-                    row.select_box.set_active(True)
-                else:
-                    row.select_box.set_active(False)
-            row = row.get_next_sibling()
-        if selected_count == 0:
-            self.finished_list_box.set_selection_mode(Gtk.SelectionMode.NONE)
-            self.delete_action.set_enabled(False)
-        else:
-            self.delete_action.set_enabled(True)
         
     def _update_ui(self):
         if self.finished_list_box is not None:

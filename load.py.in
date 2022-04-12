@@ -11,13 +11,13 @@ pkgdatadir = "@pkgdatadir@"
 localedir = '@localedir@'
 
 try:
-    locale.bindtextdomain('atay', localedir)
-    locale.textdomain('atay')
+    locale.bindtextdomain('flow', localedir)
+    locale.textdomain('flow')
 except:
     print('Locale processing failed')
 try:
-    gettext.bindtextdomain('atay', localedir)
-    gettext.textdomain('atay')
+    gettext.bindtextdomain('flow', localedir)
+    gettext.textdomain('flow')
 except:
     print('Translation processing failed')
 
@@ -25,8 +25,8 @@ sys.path.insert(1, pkgdatadir)
 
 if __name__ == "__main__":
     from gi.repository import Gio
-    resources = Gio.Resource.load(os.path.join(pkgdatadir, 'atay.gresource'))
+    resources = Gio.Resource.load(os.path.join(pkgdatadir, 'flow.gresource'))
     resources._register()
 
-    from atay import main
+    from flow import main
     main.main(VERSION)

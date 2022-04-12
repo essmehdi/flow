@@ -1,4 +1,4 @@
-moduledir = join_paths(pkgdatadir, 'atay/components')
+moduledir = join_paths(pkgdatadir, 'flow/components')
 
 sources = [
     '__init__.py',

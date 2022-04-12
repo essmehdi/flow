@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="RitzerWindow" parent="AdwApplicationWindow">
-    <property name="title">Atay</property>
+  <template class="FlowWindow" parent="AdwApplicationWindow">
+    <property name="title">Flow</property>
     <property name="content">
       <object class="GtkBox">
         <property name="visible">1</property>
@@ -151,14 +151,14 @@
                 <object class="AdwStatusPage">
                   <property name="title" translatable="yes">No downloads yet</property>
                   <property name="icon-name">content-loading-symbolic</property>
-                  <property name="description" translatable="yes">Add a download from URL or use your browser extension to catch one</property>
+                  <property name="description" translatable="yes">Use a link to start a download or use your browser extension to catch one</property>
                   <property name="child">
                     <object class="GtkButton">
                       <property name="halign">center</property>
                       <property name="action-name">win.new</property>
                       <property name="child">
                         <object class="AdwButtonContent">
-                          <property name="label" translatable="yes">Add from URL</property>
+                          <property name="label" translatable="yes">Add from link</property>
                           <property name="icon-name">list-add-symbolic</property>
                         </object>
                       </property>

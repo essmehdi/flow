@@ -20,7 +20,7 @@ To build from source, clone this repository and build the project with Meson:
 
 ```shell
 git clone https://github.com/essmehdi/flow
-cd atay
+cd flow
 meson build --prefix=/usr/local
 sudo ninja -C build install
 ```

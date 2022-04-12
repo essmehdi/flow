@@ -1,4 +1,4 @@
-moduledir = join_paths(pkgdatadir, 'atay/components/preferences')
+moduledir = join_paths(pkgdatadir, 'flow/components/preferences')
 
 sources = [
     '__init__.py',

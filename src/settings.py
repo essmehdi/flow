@@ -9,7 +9,7 @@ class Settings(Gio.Settings):
 
     @staticmethod
     def new():
-        g_settings = Gio.Settings.new('com.github.essmehdi.atay')
+        g_settings = Gio.Settings.new('com.github.essmehdi.flow')
         g_settings.__class__ = Settings
         return g_settings
 
@@ -83,3 +83,7 @@ class Settings(Gio.Settings):
     @property
     def force_dark(self):
         return self.get_boolean('force-dark')
+
+    @property
+    def fallback_directory(self):
+        return self.get_string('fallback-directory')

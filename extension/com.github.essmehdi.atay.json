@@ -1,7 +1,7 @@
 {
-    "name": "com.github.essmehdi.atay",
-    "description": "Native messaging for Atay",
-    "path": "/usr/local/bin/atay-connector",
+    "name": "com.github.essmehdi.flow",
+    "description": "Native messaging for Flow",
+    "path": "/usr/local/bin/flow-connector",
     "type": "stdio",
     "allowed_extensions": [ "flowcatcher.essmehdi@github.com" ]
 }

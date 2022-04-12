@@ -1,6 +1,6 @@
 {
-    "name": "Atay Intercepter",
-    "description": "Download intercepter for Atay",
+    "name": "Flow Intercepter",
+    "description": "Download intercepter for Flow",
     "version": "1.0",
     "manifest_version": 2,
     "browser_specific_settings": {

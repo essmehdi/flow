@@ -5,7 +5,7 @@ from .category_row import CategoryRow
 
 from gi.repository import Gtk, Adw, Gio
 
-@Gtk.Template(resource_path="/com/github/essmehdi/atay/layout/preferences/window.ui")
+@Gtk.Template(resource_path="/com/github/essmehdi/flow/layout/preferences/window.ui")
 class PreferencesWindow(Adw.PreferencesWindow):
     __gtype_name__ = "PreferencesWindow"
 
@@ -40,7 +40,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
     def append_add_button(self):
         builder = Gtk.Builder()
-        builder.add_from_resource("/com/github/essmehdi/atay/layout/preferences/add_row.ui")
+        builder.add_from_resource("/com/github/essmehdi/flow/layout/preferences/add_row.ui")
         self.add_row = builder.get_object("add_row")
         self.add_button = builder.get_object("add_button")
         self.add_button.connect("clicked", self.add_handler)

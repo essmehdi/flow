@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-    <gresource prefix="/com/github/essmehdi/atay">
+    <gresource prefix="/com/github/essmehdi/flow">
         <file>layout/main.ui</file>
         <file>layout/url_prompt.ui</file>
         <file>layout/download_item.ui</file>

@@ -5,7 +5,7 @@ from gi.repository import Gtk, Adw, Gio
 from ..file_chooser_button import FileChooserButton
 from gettext import gettext as _
 
-@Gtk.Template(resource_path="/com/github/essmehdi/atay/layout/preferences/category_editor.ui")
+@Gtk.Template(resource_path="/com/github/essmehdi/flow/layout/preferences/category_editor.ui")
 class CategoryEditor(Adw.Window):
     __gtype_name__ = "CategoryEditor"
 

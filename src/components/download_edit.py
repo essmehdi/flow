@@ -4,7 +4,7 @@ from gettext import gettext as _
 
 from ..controller import DownloadsController
 
-@Gtk.Template(resource_path="/com/github/essmehdi/atay/layout/download_edit.ui")
+@Gtk.Template(resource_path="/com/github/essmehdi/flow/layout/download_edit.ui")
 class DownloadEdit(Adw.Window):
     __gtype_name__ = "DownloadPrompt"
 

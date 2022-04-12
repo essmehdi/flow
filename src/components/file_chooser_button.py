@@ -2,7 +2,7 @@ from gi.repository import Gtk, GObject
 from gettext import gettext as _
 import os
 
-@Gtk.Template(resource_path="/com/github/essmehdi/atay/layout/file_chooser_button.ui")
+@Gtk.Template(resource_path="/com/github/essmehdi/flow/layout/file_chooser_button.ui")
 class FileChooserButton(Gtk.Button):
     __gtype_name__ = 'FileChooserButton'
 

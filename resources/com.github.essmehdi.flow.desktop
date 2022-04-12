@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=0.1.0
-Name=Atay
+Name=Flow
 Comment=A download manager for GNOME
-Exec=atay
-Icon=com.github.essmehdi.atay
+Exec=flow
+Icon=com.github.essmehdi.flow
 Terminal=false
 Type=Application
 Keywords=Productivity;Download;Manager;
