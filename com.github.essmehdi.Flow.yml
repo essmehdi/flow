@@ -1,0 +1,12 @@
+app-id: com.github.essmehdi.Flow
+runtime: org.gnome.Platform
+runtime-version: master
+sdk: org.gnome.Sdk
+command: flow
+modules:
+  - name: flow
+    buildir: true
+    buildsystem: meson
+    sources:
+      - type: dir
+        name: .
