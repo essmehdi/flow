@@ -203,8 +203,8 @@
 		</section>
 		<section>
 			<item>
-				<attribute name="label" translatable="yes">Resume with new link</attribute>
-				<attribute name="action">download.resume-new-link</attribute>
+				<attribute name="label" translatable="yes">Resume with new link (Experimental)</attribute>
+				<attribute name="action">download.resume-with-link</attribute>
 			</item>
 			<item>
 				<attribute name="label" translatable="yes">Copy download link</attribute>
@@ -222,6 +222,18 @@
 				<attribute name="label" translatable="yes">Open containing folder</attribute>
 				<attribute name="action">download.open-folder</attribute>
 				<attribute name="verb-icon">folder-open-symbolic</attribute>
+			</item>
+		</section>
+		<section>
+			<item>
+				<attribute name="label" translatable="yes">Delete</attribute>
+				<attribute name="action">download.delete</attribute>
+				<attribute name="verb-icon">user-trash-symbolic</attribute>
+			</item>
+			<item>
+				<attribute name="label" translatable="yes">Delete with file</attribute>
+				<attribute name="action">download.delete-with-file</attribute>
+				<attribute name="verb-icon">user-trash-symbolic</attribute>
 			</item>
 		</section>
 	</menu>
