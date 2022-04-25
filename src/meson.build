@@ -15,8 +15,10 @@ sources = [
     'download.py',
     'controller.py',
     'toaster.py',
+    'notifier.py',
     'about.py'
 ]
 
 install_data(sources, install_dir: moduledir)
 subdir('components')
+subdir('preferences')
