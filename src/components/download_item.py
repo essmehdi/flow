@@ -57,13 +57,16 @@ class DownloadItem(Gtk.ListBoxRow):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        # Selection mode connect handler ID
+        self.connect_id = None
+        # Progress & speed data init
         self.last_checked = 0
         self.last_progress = 0
         self.speed = "0 B/s"
         self.eta = None
         # Context menu
         self.menu = Gtk.PopoverMenu.new_from_model(self.download_menu)
-        self.menu.set_has_arrow(False)
+        #self.menu.set_has_arrow(False)
         self.menu.set_parent(self)
         # Setup actions
         self.setup_actions()
@@ -80,36 +83,34 @@ class DownloadItem(Gtk.ListBoxRow):
         self.click_handler = Gtk.GestureClick.new()
         self.click_handler.connect_after('pressed', self.handle_press)
         self.add_controller(self.click_handler)
-        # Handle long press
-        self.long_click_handler = Gtk.GestureLongPress.new()
-        self.long_click_handler.connect('pressed', self.handle_long_press)
-        self.add_controller(self.long_click_handler)
         # Handle properties changes
         self.connect('notify::filename', lambda *_: GLib.idle_add(self.on_filename_change))
         self.connect('notify::status', lambda *_: GLib.idle_add(self.on_status_change))
         self.connect('notify::progress', lambda *_: GLib.idle_add(self.on_progress_change))
         self.connect('notify::size', lambda *_: GLib.idle_add(self.on_size_change))
         self.connect('notify::resumable', lambda *_: GLib.idle_add(self.on_status_change))
-        self.connect_after('notify::selected', self.on_selected_change)
         self.connect_after('notify::selection-mode', self.on_selection_mode_change)
         self.select_box.set_sensitive(False)
         # Sync selected status with checkbox
-        self.bind_property("selected", self.select_box, "active", GObject.BindingFlags.BIDIRECTIONAL)
+        self.bind_property("selected", self.select_box, "active", GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL)
 
     def on_selected_change(self, *_):
         if self.selected:
-            DownloadsController.get_instance().select(self)
+            DownloadsController.get_instance().select(self.id)
         else:
-            DownloadsController.get_instance().unselect(self)
+            DownloadsController.get_instance().unselect(self.id)
 
     def on_selection_mode_change(self, *_):
-        if self.selection_mode:
-            self.left_stack.set_visible_child_name('select_mode')
-        else:
-            self.left_stack.set_visible_child_name('action_mode')
-
-    def handle_long_press(self, *_):
-        DownloadsController.get_instance().enable_selection()
+        if self.status == Download.STATUS_DONE:
+            if self.selection_mode:
+                self.left_stack.set_visible_child_name('select_mode')
+                self.connect_id = self.connect('notify::selected', self.on_selected_change)
+            else:
+                if self.connect_id is not None:
+                    self.disconnect(self.connect_id)
+                    self.connect_id = None
+                    self.selected = False
+                self.left_stack.set_visible_child_name('action_mode')
 
     def on_filename_change(self, *__):
         if self.filename == "":
@@ -137,7 +138,7 @@ class DownloadItem(Gtk.ListBoxRow):
             self.state_stack.set_visible_child_name('restart')
             self.actions_stack.set_visible_child_name('cancel')
             self.details_text.set_label(DownloadItem.ERROR_MESSAGES.get(self.status, _("An error occured")))
-            self.actions_activator('restart', 'delete')
+            self.actions_activator('restart', 'delete', 'resume-with-link')
         elif self.status == "moving":
             self.details_text.set_label(_("Moving file..."))
             self.state_stack.set_visible_child_name('pause')
@@ -146,7 +147,7 @@ class DownloadItem(Gtk.ListBoxRow):
         elif self.status == "done":
             self.state_stack.set_visible_child_name('done')
             self.actions_stack.set_visible_child_name('open')
-            self.actions_activator('open-folder', 'open-file')
+            self.actions_activator('open-folder', 'open-file', 'delete', 'delete-with-file')
             self.details_text.set_label(
                 (convert_size(self.size) if self.size > 0 else '') + (" • " if self.category and self.size > 0 else '') + self.category
             )
@@ -175,30 +176,38 @@ class DownloadItem(Gtk.ListBoxRow):
             self.last_progress = self.progress
         time_delta = current_time - self.last_checked
         if time_delta >= 10**6:
+            # Amount of data download in a second
+            progress_delta = self.progress - self.last_progress
             # Update the progess
             if self.size > 0:
                 self.progress_bar.set_fraction(float(self.progress / self.size))
-            # Speed
-            progress_delta = self.progress - self.last_progress
+                self.eta = get_eta(progress_delta, self.size - self.progress)
             self.speed = f"{convert_size(progress_delta)}/s" if progress_delta > 0 else "0 B/s"
             if self.status == "downloading" or self.status == "paused":
                 self.update_details_text()
             self.last_progress = self.progress
             self.last_checked = current_time
-            if self.size > 0:
-                self.eta = get_eta(progress_delta, self.size - self.progress)
 
     def on_size_change(self, *_):
         self.progress_bar.set_visible(self.size > 0 and self.status in ('downloading', 'paused'))
 
-    def handle_press(self, controller, clicks, *__):
+    def handle_press(self, controller, clicks, x, y):
         if controller.get_button() == 3:
-            self.menu.popup()
+            # TODO: Fix weird warnings
+            pointing_position = Gdk.Rectangle(x, y, 1, 1)
+            pointing_position.x = x
+            pointing_position.y = y
+            pointing_position.height = 1
+            pointing_position.width = 1
+            self.menu.set_pointing_to(pointing_position)
+            self.menu.show()
         elif controller.get_button() == 1:
             if clicks == 2 and not self.selection_mode:
-                self.actions.lookup_action('open-file').activate()
-            elif clicks == 1:
-                logging.debug("Single click")
+                if self.status == Download.STATUS_DONE:
+                    self.actions.lookup_action('open-file').activate()
+                else:
+                    self.actions.lookup_action('edit').activate()
+            elif clicks == 1 and self.selection_mode:
                 self.selected = not self.selected
 
     def open_folder(self, *_):
@@ -235,6 +244,10 @@ class DownloadItem(Gtk.ListBoxRow):
                 "activate": lambda _, __, row: DownloadsController.get_instance().delete(row.id)
             },
             {
+                "name": 'delete-with-file',
+                "activate": lambda _, __, row: DownloadsController.get_instance().delete(row.id, True)
+            },
+            {
                 "name": 'pause',
                 "activate": lambda _, __, row: DownloadsController.get_instance().pause(row.id)
             },
@@ -245,6 +258,10 @@ class DownloadItem(Gtk.ListBoxRow):
             {
                 "name": 'edit',
                 "activate": self.show_edit_window
+            },
+            {
+                "name": 'resume-with-link',
+                "activate": lambda _, __, row: DownloadsController.get_instance().resume_with_link(row.id)
             }
         ]
         for action in actions_list:

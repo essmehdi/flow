@@ -3,14 +3,14 @@ import gi
 import sys
 import logging
 
-from . import toaster
+from .toaster import Toaster
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 gi.require_version("Notify", "0.7")
 
 from gi.repository import Gtk, Adw, Gio, GObject, Notify
-from .components.preferences.window import PreferencesWindow
+from .preferences.window import PreferencesWindow
 from .controller import DownloadsController
 from .components.url_prompt import URLPrompt
 from .about import AboutDialog
@@ -32,10 +32,15 @@ class FlowWindow(Adw.ApplicationWindow):
     header_bar = Gtk.Template.Child()
     toast_overlay = Gtk.Template.Child()
     empty_stack = Gtk.Template.Child()
+    selection_mode_toggle = Gtk.Template.Child()
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.about = None
+        # Discard selection mode action
+        self.discard_action = Gio.SimpleAction.new('discard-selection-mode', None)
+        self.discard_action.connect('activate', self.discard_selection_mode)
+        self.add_action(self.discard_action)
         # New download action
         self.new_action = Gio.SimpleAction.new('new', None)
         self.new_action.connect('activate', self.show_url_prompt)
@@ -60,7 +65,7 @@ class FlowWindow(Adw.ApplicationWindow):
         # Init the controller
         DownloadsController.get_instance().load_ui(self)
         # Register toast overlay
-        toaster.register_overlay(self.toast_overlay)
+        Toaster.get_instance().register_overlay(self.toast_overlay)
         # Setup shortcuts
         self.setup_shortcuts()
         self.prompt = None
@@ -70,10 +75,16 @@ class FlowWindow(Adw.ApplicationWindow):
         settings.bind('window-width', self, 'default-width', Gio.SettingsBindFlags.DEFAULT)
         settings.bind('window-height', self, 'default-height', Gio.SettingsBindFlags.DEFAULT)
         settings.bind('window-maximized', self, 'maximized', Gio.SettingsBindFlags.DEFAULT)
+        # Selection mode toggle
+        self.selection_mode_toggle.bind_property('active', DownloadsController.get_instance(), 'selection-mode', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL)
+
+    def discard_selection_mode(self, *_):
+        self.selection_mode_toggle.set_active(False)
 
     def setup_shortcuts(self):
         self.get_application().set_accels_for_action("win.delete-selected", ["Delete", None])
         self.get_application().set_accels_for_action("win.new", ["<Ctrl>n", None])
+        self.get_application().set_accels_for_action("win.discard-selection-mode", ["Escape", None])
         self.get_application().set_accels_for_action("prompt.confirm", ["Return", None])
         self.get_application().set_accels_for_action("prompt.cancel", ["Escape", None])
         self.get_application().set_accels_for_action("dedit.save", ["Return", None])
@@ -107,8 +118,6 @@ class MainApplication(Adw.Application):
     def __init__(self, version, **kwargs):
         super().__init__(application_id="com.github.essmehdi.flow", **kwargs)
         self.window = None
-        # Initialize libnotify
-        Notify.init('Flow')
         self.version = version
 
     def do_activate(self):
@@ -157,7 +166,6 @@ class MainApplication(Adw.Application):
             
         if args.url:
             logging.debug(args.headers)
-            #self.window.present()
             DownloadsController.get_instance().add_from_url(args.url, json.loads(args.headers) if args.headers is not None else {})
         elif self.window and not self.window.get_visible():
             logging.debug("Window hidden")

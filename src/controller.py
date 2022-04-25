@@ -1,3 +1,6 @@
+from email.mime import application
+from .components.browser_wait import BrowserWait
+from .notifier import Notifier
 from .download import Download
 from .status_manager import StatusManager
 from gi.repository import Gio, Gtk, GObject, Gdk, Notify, GLib
@@ -41,6 +44,7 @@ class DownloadsController(GObject.GObject):
         self.delete_action = None
         self.selected_downloads = set()
         self.empty_stack = None
+        self.waiting_for_link = None
 
     def load_ui(self, window):
         # Register UI components
@@ -94,15 +98,14 @@ class DownloadsController(GObject.GObject):
         self.finished_downloads.insert(0, download)
         self._update_ui()
         # Notify user
-        if not Notify.is_initted():
-            Notify.init('com.github.essmehdi.flow')
-        notification = Notify.Notification.new(_("Download finished"), download.filename, "go-down-symbolic")
-        notification.set_category("transfer.complete")
-        notification.show()
+        Notifier.notify(_("Download finished"), download.filename, "folder-download-symbolic")
     
     def add_from_url(self, url, headers=None, raw_headers=None):
-        self.running_downloads.insert(0, Download(url=url, headers=headers, raw_headers=raw_headers))
-        self._update_ui()
+        if self.waiting_for_link is None:
+            self.running_downloads.insert(0, Download(url=url, headers=headers, raw_headers=raw_headers))
+            self._update_ui()
+        else:
+            self._update_link(url, headers, self.waiting_for_link[0], raw_headers is not None)
 
     def get_file(self, id):
         return self._get_download(id).get_file()
@@ -127,14 +130,27 @@ class DownloadsController(GObject.GObject):
         clipboard = Gdk.Display.get_default().get_clipboard()
         clipboard.set_content(Gdk.ContentProvider.new_for_value(self._get_download(id).url))
 
-    def delete(self, id):
-        self._delete_with_id(id)
+    def resume_with_link(self, id):
+        download = self._get_download(id)
+        popup = BrowserWait(transient_for=download.row.get_root(), application=download.row.get_root().get_application())
+        popup.show()
+        self.waiting_for_link = (download, popup)
+
+    def _update_link(self, new_url, new_headers, download, raw):
+        self.waiting_for_link[1].destroy()
+        self.waiting_for_link = None
+        download.resumable = True
+        download.url = new_url
+        download.setup_request_headers(new_headers, raw)
+        download.resume()
+
+    def delete(self, id, delete_file=False):
+        self._delete_with_id(id, delete_file)
 
     def delete_selected_rows(self, _, __, window):
         self._delete_dialog(window)
 
     def enable_selection(self):
-        self.delete_action.set_enabled(True)
         self.selection_mode = True
 
     def disable_selection(self):
@@ -142,25 +158,24 @@ class DownloadsController(GObject.GObject):
         self.selected_downloads = set()
         self.selection_mode = False
 
-    def select(self, row):
-        self.selected_downloads.add(row.id)
-        logging.debug(self.selected_downloads)
+    def select(self, id):
+        self.delete_action.set_enabled(True)
+        self.selected_downloads.add(id)
 
-    def unselect(self, row):
-        self.selected_downloads.remove(row.id)
-        logging.debug(self.selected_downloads)
+    def unselect(self, id):
+        self.selected_downloads.remove(id)
         if len(self.selected_downloads) == 0:
             self.disable_selection()
 
     def _delete_with_index(self, index, running=False, delete_file=False):
-        if running:
-            if self.running_downloads.get_item(index).delete(delete_file):
-                self.running_downloads.remove(index)
-                self._update_ui()
-        else:
-            if self.finished_downloads.get_item(index).delete(delete_file):
-                self.finished_downloads.remove(index)
-                self._update_ui()
+        d_list = self.running_downloads if running else self.finished_downloads
+        download = d_list.get_item(index)
+        if download.delete(delete_file):
+            d_list.remove(index)
+            self._update_ui()
+        # Check if it exists in selected downloads & remove it
+        if self.selection_mode and download.id in self.selected_downloads:
+            self.unselect(download.id)
     
     def _delete_with_id(self, id, delete_file=False):
         index = self._find_position_from_finished(id)
@@ -303,7 +318,7 @@ class DownloadsController(GObject.GObject):
         item.bind_property("date_started", row, "date_started", GObject.BindingFlags.SYNC_CREATE)
         item.bind_property("date_initiated", row, "date_initiated", GObject.BindingFlags.SYNC_CREATE)
         item.bind_property("date_finished", row, "date_finished", GObject.BindingFlags.SYNC_CREATE)
-        DownloadsController.get_instance().bind_property("selection_mode", row, "selection_mode", GObject.BindingFlags.SYNC_CREATE)
+        self.bind_property("selection_mode", row, "selection_mode", GObject.BindingFlags.SYNC_CREATE)
         item.row = row
         return row
         
