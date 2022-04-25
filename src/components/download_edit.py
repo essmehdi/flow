@@ -15,8 +15,8 @@ class DownloadEdit(Adw.Window):
     cancel_button_content = Gtk.Template.Child()
 
     def __init__(self, initial, id, url, filename, directory, **kwargs):
-        self.save_action = None
         super().__init__(**kwargs)
+        self.save_action = None
         # Check if it's download confirmation prompt
         self.initial = initial
         if self.initial:
@@ -53,13 +53,13 @@ class DownloadEdit(Adw.Window):
             self.save_action.set_enabled(self.filename_flag or self.directory_flag or self.initial)
 
     def setup_actions(self):
-        self.actions = Gio.SimpleActionGroup.new()
+        self.actions = Gio.SimpleActionGroup()
         # Save action
-        self.save_action = Gio.SimpleAction.new('save', None)
+        self.save_action = Gio.SimpleAction(name='save')
         self.save_action.connect('activate', self.save)
         self.actions.add_action(self.save_action)
         # Cancel action
-        self.cancel_action = Gio.SimpleAction.new('cancel', None)
+        self.cancel_action = Gio.SimpleAction(name='cancel')
         self.cancel_action.connect('activate', self.cancel_download if self.initial else self.cancel)
         self.actions.add_action(self.cancel_action)
         # Insert actions into window
@@ -73,45 +73,6 @@ class DownloadEdit(Adw.Window):
         else:
             self.directory_flag = False
         self.refresh_save_action()
-
-    # def change_directory(self, *_):
-    #     chooser = Gtk.FileChooserDialog(transient_for=self)
-    #     chooser.set_action(Gtk.FileChooserAction.SELECT_FOLDER)
-    #     chooser.set_title(_("Choose a directory"))
-    #     chooser.add_buttons(
-    #         "Cancel",
-    #         Gtk.ResponseType.CANCEL,
-    #         "Select",
-    #         Gtk.ResponseType.OK
-    #     )
-    #     chooser.set_modal(True)
-    #     chooser.get_widget_for_response(response_id=Gtk.ResponseType.OK).get_style_context().add_class(class_name="suggested-action")
-    #     chooser.connect("response", self.directory_chooser_response)
-    #     chooser.show()
-
-    # def directory_chooser_response(self, chooser, response):
-    #     if response == Gtk.ResponseType.OK:
-    #         selected_path = chooser.get_file().get_path()
-    #         if os.access(selected_path, os.W_OK):
-    #             if os.path.normpath(selected_path) != os.path.normpath(self.og_directory):
-    #                 self.new_directory = selected_path
-    #                 self.directory_flag = True
-    #             else:
-    #                 self.directory_flag = False
-    #             self.refresh_save_action()
-    #             self.directory_button.get_child().set_label(selected_path)
-    #         else:
-    #             error_dialog = Gtk.MessageDialog(
-    #                 transient_for = self,
-    #                 message_type = Gtk.MessageType.ERROR,
-    #                 buttons = Gtk.ButtonsType.OK,
-    #                 text = _("Permission error"),
-    #                 secondary_text = _("{} is not writable").format(selected_path)
-    #             )
-    #             error_dialog.connect("response", lambda *_: error_dialog.destroy())
-    #             error_dialog.set_modal(True)
-    #             error_dialog.show()
-    #     chooser.destroy()
     
     def save(self, *_):
         DownloadsController.get_instance().edit(
