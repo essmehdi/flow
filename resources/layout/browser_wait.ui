@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <template class="BrowserWait" parent="AdwWindow">
+        <property name="modal">True</property>
+        <property name="resizable">False</property>
+        <property name="deletable">False</property>
+        <property name="content">
+            <object class="GtkWindowHandle">
+                <child>
+                    <object class="GtkBox">
+                        <property name="margin-top">20</property>
+                        <property name="margin-bottom">20</property>
+                        <property name="margin-start">20</property>
+                        <property name="margin-end">20</property>
+                        <property name="spacing">5</property>
+                        <property name="orientation">vertical</property>
+                        <!-- <child>
+                            <object class="GtkHeaderBar">
+                                <style>
+                                    <class name="flat" />
+                                </style>
+                            </object>
+                        </child> -->
+                        <child>
+                            <object class="GtkLabel">
+                                <property name="label" translatable="yes">Waiting for download</property>
+                                <style>
+                                    <class name="title-1" />
+                                </style>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkLabel">
+                                <property name="label" translatable="yes">The next detected download on your browser will resume this download</property>
+                            </object>
+                        </child>
+                    </object>
+        
+                </child>
+            </object>
+        </property>
+    </template>
+</interface>

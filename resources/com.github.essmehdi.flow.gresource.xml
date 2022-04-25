@@ -6,6 +6,7 @@
         <file>layout/download_item.ui</file>
         <file>layout/download_edit.ui</file>
         <file>layout/about.ui</file>
+        <file>layout/browser_wait.ui</file>
         <file>layout/file_chooser_button.ui</file>
         <file>layout/preferences/window.ui</file>
         <file>layout/preferences/category_row.ui</file>
