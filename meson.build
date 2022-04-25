@@ -16,12 +16,4 @@ configure_file(
   install_dir: get_option('bindir')
 )
 
-configure_file(
-  input: 'host.py.in',
-  output: 'flow-connector',
-  configuration: conf,
-  install: true,
-  install_dir: get_option('bindir')
-)
-
 meson.add_install_script('build-utils/postinstall.py')
