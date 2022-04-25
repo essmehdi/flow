@@ -12,7 +12,6 @@ browser.runtime.onMessage.addListener(function (request, _, __) {
 });
 
 browser.webRequest.onHeadersReceived.addListener(function (details) {
-    console.log(details);
     if (details.type !== 'main_frame' && details.type !== 'sub_frame') return;
     const headers = details.responseHeaders;
     if (headers.find(header => header.name.toLowerCase() === 'content-disposition' && !header.value.startsWith("inline"))) {
