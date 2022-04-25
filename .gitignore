@@ -150,6 +150,13 @@ builddir/
 # Editors config
 .idea/
 .vscode/
+.buildconfig
+
+# Flatpak
+.flatpak-builder
+
+# Extension builds
+extension/src/web-ext-artifacts
 
 os
 sys
