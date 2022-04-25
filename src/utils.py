@@ -1,5 +1,8 @@
+import os
 import re
 import math
+
+from gi.repository import Gio, GLib
 
 def convert_size(size):
     if size == 0:
@@ -29,3 +32,12 @@ def get_eta(speed, size):
 def file_extension_match(filename, extensions):
     extensions_regex = "(?:" + extensions.strip().replace('.', '\.').replace(' ', '|') + ")$"
     return False if re.search(extensions_regex, filename) is None else True
+
+def create_download_temp(name):
+    temp_dir = os.path.join(GLib.get_home_dir(), '.flow/files')
+    # Create folder if doesn't exist
+    if not os.path.exists(temp_dir):
+        os.makedirs(temp_dir)
+    return Gio.File.new_for_path(os.path.join(temp_dir, name))
+
+    

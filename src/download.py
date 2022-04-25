@@ -1,10 +1,12 @@
 import os
 import threading
 import uuid
-from gi.repository import GObject, GLib, Gio
+from gi.repository import GObject, GLib, Gio, Notify
 import pycurl
 
-from .utils import file_extension_match
+from .notifier import Notifier
+
+from .utils import create_download_temp, file_extension_match
 
 from .status_manager import StatusManager
 import logging
@@ -12,9 +14,9 @@ import shutil
 import mimetypes
 import cgi
 import time
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
 from .settings import Settings
-from . import toaster
+from .toaster import Toaster
 from gettext import gettext as _
 import validators
 
@@ -85,24 +87,35 @@ class Download(GObject.Object):
         self.ua = None
         if not status:
             # Means that this is a new download
-            new_temp_file = Gio.File.new_tmp()[0]
             self.id = str(uuid.uuid4())
+            new_temp_file = create_download_temp(self.id)
             status = StatusManager.register_download(self.id, url=url, tmp=new_temp_file.get_path())
+            # Notify user
+            Notifier.notify(_("Download initiated"), url, "folder-download-symbolic")
         else:
             self.id = id
         self.populate_properties(status)
         self.connect("notify", self.handle_property_change)
         if headers is not None:
             logging.debug("New download with custom headers")
+            self.setup_request_headers(headers)
+        elif raw_headers is not None:
+            logging.debug("New download with custom headers (raw)")
+            self.setup_request_headers(raw_headers, True)
+        self.setup()
+
+    def setup_request_headers(self, headers, raw=False):
+        logging.debug('Registering request headers')
+        if raw:
+            self.custom_headers = headers
+        else:
+            new_custom_headers = ''
             for line in headers:
                 if line.get('value'):
                     if line.get('name') == 'User-Agent':
                         self.ua = line.get('value')
-                    self.custom_headers = self.custom_headers + f",{line['name']}: {line['value']}"
-        elif raw_headers is not None:
-            logging.debug("New download with custom headers (raw)")
-            self.custom_headers = raw_headers
-        self.setup()
+                    new_custom_headers += f",{line['name']}: {line['value']}"
+            self.custom_headers = new_custom_headers
 
     def populate_properties(self, status: dict):
         # Populate properties with provided status object
@@ -177,7 +190,7 @@ class Download(GObject.Object):
                     self.filename = unquote(params.get('filename').encode('iso-8859-1').decode('utf8'))
                     reported = True
             if not reported:
-                filename = unquote(self.url).split("/")[-1]
+                filename = unquote(urlparse(self.url).path).split("/")[-1]
                 if len(filename) >= 200:
                     filename = filename[-1:-100:-1].strip()
                 elif filename == "":
@@ -215,8 +228,8 @@ class Download(GObject.Object):
 
             # Flag info as parsed (In case of resume)
             self.info_parsed = True
-            from .controller import DownloadsController
-            GLib.idle_add(lambda: DownloadsController.get_instance().confirm_download(self))
+            # from .controller import DownloadsController
+            # GLib.idle_add(lambda: DownloadsController.get_instance().confirm_download(self))
 
     def _start_download(self):
         # Start data transfer
@@ -290,6 +303,9 @@ class Download(GObject.Object):
                 self.resumable = False
             case _:
                 self.status = Download.STATUS_CONNECTION_ERROR
+        # Notify user
+        if args[0] != pycurl.E_ABORTED_BY_CALLBACK:
+            Notifier.notify(_("Downlod error"), _("An error occured while downloading"), "folder-download-symbolic")
 
     def get_output_file_path(self):
         if self.output_directory:
@@ -322,18 +338,22 @@ class Download(GObject.Object):
         elif user_agent:
             logging.debug(f"Preference user agent: {user_agent}")
             self.worker.setopt(pycurl.USERAGENT, user_agent)
-        # Setup proxy settings if activated
+        # Setup proxy settings
         use_proxy = Settings.get().use_proxy
+        proxy_address = Settings.get().proxy_address
         logging.debug(f"Preference proxy enabled: {use_proxy}")
-        if use_proxy:
-            proxy_address = Settings.get().proxy_address
-            if proxy_address and validators.url(proxy_address):
-                self.worker.setopt(pycurl.PROXY, proxy_address)
-                self.worker.setopt(pycurl.PROXYPORT, Settings.get().proxy_port)
-            else:
-                message = f"Invalid IP address {proxy_address}. Ignoring proxy settings."
-                logging.error(message)
-                toaster.show(message)
+        if use_proxy and proxy_address and validators.url(proxy_address):
+            logging.debug('Proxy: Using custom settings')
+            self.worker.setopt(pycurl.PROXY, proxy_address)
+            self.worker.setopt(pycurl.PROXYPORT, Settings.get().proxy_port)
+        else:
+            # Use GNOME proxy settings
+            logging.debug('Proxy: Using GNOME settings')
+            proxy_resolver = Gio.ProxyResolver.get_default()
+            proxy = proxy_resolver.lookup(self.url)
+            logging.debug(f'GNOME Proxy Resolver: {proxy[0]}')
+            if not proxy[0].startswith('direct://'):
+                self.worker.setopt(pycurl.PROXY, proxy)
 
     def open_file(self):
         if self.status == 'done':
@@ -342,10 +362,10 @@ class Download(GObject.Object):
                 logging.debug(f"Launching file: {file_path}")
                 Gio.AppInfo.launch_default_for_uri("file://" + file_path)
             else:
-                toaster.show(_("The file has been moved or deleted"))
+                Toaster.get_instance().show(_("The file has been moved or deleted"))
         else:
             self.open_on_finish = True
-            toaster.show(_("The file will be automatically opened once download is finished"))
+            Toaster.get_instance().show(_("The file will be automatically opened once download is finished"))
 
     def open_folder(self):
         if self.status == 'done':
