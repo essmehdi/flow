@@ -1,8 +1,7 @@
 import os
 
-from ...settings import Settings
+from ..settings import Settings
 from gi.repository import Gtk, Adw, Gio
-from ..file_chooser_button import FileChooserButton
 from gettext import gettext as _
 
 @Gtk.Template(resource_path="/com/github/essmehdi/flow/layout/preferences/category_editor.ui")
