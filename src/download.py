@@ -353,7 +353,7 @@ class Download(GObject.Object):
             proxy = proxy_resolver.lookup(self.url)
             logging.debug(f'GNOME Proxy Resolver: {proxy[0]}')
             if not proxy[0].startswith('direct://'):
-                self.worker.setopt(pycurl.PROXY, proxy)
+                self.worker.setopt(pycurl.PROXY, proxy[0])
 
     def open_file(self):
         if self.status == 'done':
