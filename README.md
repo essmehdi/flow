@@ -2,17 +2,17 @@
 
 ![](screenshots/1.png)
 
-A utility application to automatically organize and keep track of your downloads designed for GNOME. The project is still in early stage with basic functionalities of downloading and sorting. This is the main features task list:
+A utility application to automatically organize and keep track of your downloads designed for GNOME. This project is still in development.
 
-- [x] Basic download (cURL)
-- [x] Auto-sorting based on file extension
-- [ ] Browser extension
-- [ ] Resume a download with a new link
-- [ ] Queues
+This apps aims to be an alternative for Internet Download Manager on Linux.
+
+This download manager features basic download with cURL, auto-sorting based on file extension and resuming with new link for broken downloads. More features are coming.
 
 ## Browser extension
 
-In this repository, there is a folder that contains the extension files. Currently, it is not bundled to be available in the extensions stores. You will have to manually enable it using your browser's developer mode when it is complete.
+For now, it is only available for Firefox.
+
+You can find the extension for Firefox [here](https://addons.mozilla.org/en-US/firefox/addon/flow-intercepter/).
 
 ## Building & installing
 
