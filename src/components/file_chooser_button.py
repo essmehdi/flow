@@ -1,4 +1,4 @@
-from gi.repository import Gtk, GObject
+from gi.repository import Gtk, GObject, Pango
 from gettext import gettext as _
 import os
 
@@ -16,9 +16,18 @@ class FileChooserButton(Gtk.Button):
         else:
             self.value = ""
         self.connect('notify::value', self.on_value_change)
+        self.get_button_label().set_ellipsize(Pango.EllipsizeMode.START)
+    
+    def get_button_label(self):
+        current = self.button_content.get_first_child()
+        while current is not None:
+            if GObject.type_is_a(current, Gtk.Label):
+                return current
+            current = current.get_next_sibling()
 
     def on_value_change(self, *__):
         self.button_content.set_label(self.value if self.value else _("Choose a directory"))
+        self.set_tooltip_text(self.value)
     
     @Gtk.Template.Callback()
     def button_clicked(self, *__):
