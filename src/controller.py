@@ -102,10 +102,14 @@ class DownloadsController(GObject.GObject):
     
     def add_from_url(self, url, headers=None, raw_headers=None):
         if self.waiting_for_link is None:
-            self.running_downloads.insert(0, Download(url=url, headers=headers, raw_headers=raw_headers))
-            self._update_ui()
+            self._create_download(url, headers, raw_headers)
         else:
-            self._update_link(url, headers, self.waiting_for_link[0], raw_headers is not None)
+            self._confirm_update(url, headers, raw_headers)
+            #self._update_link(url, headers, self.waiting_for_link[0], raw_headers is not None)
+
+    def _create_download(self, url, headers, raw_headers):
+        self.running_downloads.insert(0, Download(url=url, headers=headers, raw_headers=raw_headers))
+        self._update_ui()
 
     def get_file(self, id):
         return self._get_download(id).get_file()
@@ -135,13 +139,30 @@ class DownloadsController(GObject.GObject):
         popup = BrowserWait(transient_for=download.row.get_root(), application=download.row.get_root().get_application())
         popup.show()
         self.waiting_for_link = (download, popup)
-
-    def _update_link(self, new_url, new_headers, download, raw):
+    
+    def cancel_wait_for_link(self):
         self.waiting_for_link[1].destroy()
         self.waiting_for_link = None
+    
+    def _confirm_update(self, *download_details):
+        self.waiting_for_link[1].show_confirm_dialog(
+            download_details[0],
+            lambda *__: self._update_link(*download_details), # Confirm
+            lambda *__: self._separate_download(download_details) # Cancel
+        )
+
+    def _separate_download(self, download_details):
+        self.waiting_for_link[1].destroy()
+        self.waiting_for_link = None
+        self._create_download(*download_details)
+
+    def _update_link(self, url, headers, raw_headers):
+        self.waiting_for_link[1].destroy()
+        download = self.waiting_for_link[0]
+        self.waiting_for_link = None
         download.resumable = True
-        download.url = new_url
-        download.setup_request_headers(new_headers, raw)
+        download.url = url
+        download.setup_request_headers(headers if headers is not None else raw_headers, raw_headers is not None)
         download.resume()
 
     def delete(self, id, delete_file=False):

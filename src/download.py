@@ -190,11 +190,12 @@ class Download(GObject.Object):
                     self.filename = unquote(params.get('filename').encode('iso-8859-1').decode('utf8'))
                     reported = True
             if not reported:
-                filename = unquote(urlparse(self.url).path).split("/")[-1]
+                parsed_url = urlparse(self.url)
+                filename = unquote(parsed_url.path).split("/")[-1]
                 if len(filename) >= 200:
                     filename = filename[-1:-100:-1].strip()
                 elif filename == "":
-                    filename = unquote(self.url)
+                    filename = parsed_url.netloc
                 if "content-type" in self.response_headers and self.response_headers['content-type'] != 'application/octet-stream':
                     ext = mimetypes.guess_extension(self.response_headers['content-type'])
                     if ext and not mimetypes.guess_type(filename)[0] == self.response_headers['content-type'] and not filename.endswith(ext):
