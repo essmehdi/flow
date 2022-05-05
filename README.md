@@ -19,7 +19,7 @@ You can find the extension for Firefox [here](https://addons.mozilla.org/en-US/f
 To build from source, clone this repository and build the project with Meson:
 
 ```shell
-git clone https://github.com/essmehdi/flow
+git clone https://gitlab.com/essmehdi/flow.git
 cd flow
 meson build --prefix=/usr/local
 sudo ninja -C build install
