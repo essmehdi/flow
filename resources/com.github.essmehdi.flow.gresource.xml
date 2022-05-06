@@ -8,6 +8,7 @@
         <file>layout/about.ui</file>
         <file>layout/browser_wait.ui</file>
         <file>layout/file_chooser_button.ui</file>
+        <file>layout/shortcuts.ui</file>
         <file>layout/preferences/window.ui</file>
         <file>layout/preferences/category_row.ui</file>
         <file>layout/preferences/add_row.ui</file>

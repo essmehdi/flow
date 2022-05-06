@@ -7,6 +7,7 @@ sources = [
     'url_prompt.py',
     'file_chooser_button.py',
     'browser_wait.py',
+    'shortcuts.py',
     'about.py'
 ]
 

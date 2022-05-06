@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <template class="Shortcuts" parent="GtkShortcutsWindow">
+        <property name="modal">True</property>
+        <child>
+            <object class="GtkShortcutsSection">
+                <property name="section-name">shortcuts</property>
+                <property name="max-height">10</property>
+                <child>
+                    <object class="GtkShortcutsGroup">
+                        <property name="title" translatable="yes">General</property>
+                        <child>
+                            <object class="GtkShortcutsShortcut">
+                                <property name="accelerator">&lt;ctrl&gt;comma</property>
+                                <property name="title" translatable="yes">Open preferences</property>
+                            </object>
+                        </child>
+                    </object>
+                </child>
+                <child>
+                    <object class="GtkShortcutsGroup">
+                        <property name="title" translatable="yes">Downloads</property>
+                        <child>
+                            <object class="GtkShortcutsShortcut">
+                                <property name="accelerator">&lt;ctrl&gt;N</property>
+                                <property name="title" translatable="yes">New download from link</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkShortcutsShortcut">
+                                <property name="accelerator">Delete</property>
+                                <property name="title" translatable="yes">Delete selected downloads</property>
+                            </object>
+                        </child>
+                    </object>
+                </child>
+            </object>
+        </child>
+    </template>
+</interface>

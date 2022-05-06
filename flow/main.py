@@ -3,13 +3,12 @@ import gi
 import sys
 import logging
 
-from flow.utils.notifier import Notifier
-
-from flow.utils.toaster import Toaster
-
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 
+from flow.ui.shortcuts import Shortcuts
+from flow.utils.notifier import Notifier
+from flow.utils.toaster import Toaster
 from gi.repository import Gtk, Adw, Gio, GObject
 from flow.ui.preferences.window import PreferencesWindow
 from flow.core.controller import DownloadsController
@@ -39,38 +38,34 @@ class FlowWindow(Adw.ApplicationWindow):
         super().__init__(**kwargs)
         self.about = None
         # Discard selection mode action
-        self.discard_action = Gio.SimpleAction.new('discard-selection-mode', None)
+        self.discard_action = Gio.SimpleAction(name='discard-selection-mode')
         self.discard_action.connect('activate', self.discard_selection_mode)
         self.add_action(self.discard_action)
         # New download action
-        self.new_action = Gio.SimpleAction.new('new', None)
+        self.new_action = Gio.SimpleAction(name='new')
         self.new_action.connect('activate', self.show_url_prompt)
         self.add_action(self.new_action)
         # List actions
-        self.delete_selected = Gio.SimpleAction.new('delete-selected', None)
+        self.delete_selected = Gio.SimpleAction(name='delete-selected')
         self.delete_selected.connect('activate', DownloadsController.get_instance().delete_selected_rows, self)
         self.delete_selected.set_enabled(False)
         self.add_action(self.delete_selected)
         # Preferences action
-        preferences_action = Gio.SimpleAction.new('preferences', None)
+        preferences_action = Gio.SimpleAction(name='preferences')
         preferences_action.connect('activate', self.preferences_action_handler)
         self.add_action(preferences_action)
         # Shortcuts
-        shortcuts_action = Gio.SimpleAction.new('shortcuts', None)
+        shortcuts_action = Gio.SimpleAction(name='shortcuts')
         shortcuts_action.connect('activate', self.shortcuts_action_handler)
         self.add_action(shortcuts_action)
         # About action
-        about_action = Gio.SimpleAction.new('about', None)
+        about_action = Gio.SimpleAction(name='about')
         about_action.connect('activate', self.about_action_handler)
         self.add_action(about_action)
         # Init the controller
         DownloadsController.get_instance().load_ui(self)
         # Register toast overlay
         Toaster.register_overlay(self.toast_overlay)
-        # Setup shortcuts
-        self.setup_shortcuts()
-        self.prompt = None
-        self.preferences = None
         # Save window state
         settings = Gio.Settings("com.github.essmehdi.flow")
         settings.bind('window-width', self, 'default-width', Gio.SettingsBindFlags.DEFAULT)
@@ -81,35 +76,20 @@ class FlowWindow(Adw.ApplicationWindow):
 
     def discard_selection_mode(self, *_):
         self.selection_mode_toggle.set_active(False)
-
-    def setup_shortcuts(self):
-        self.get_application().set_accels_for_action("win.delete-selected", ["Delete", None])
-        self.get_application().set_accels_for_action("win.new", ["<Ctrl>n", None])
-        self.get_application().set_accels_for_action("win.discard-selection-mode", ["Escape", None])
-        self.get_application().set_accels_for_action("prompt.confirm", ["Return", None])
-        self.get_application().set_accels_for_action("prompt.cancel", ["Escape", None])
-        self.get_application().set_accels_for_action("dedit.save", ["Return", None])
-        self.get_application().set_accels_for_action("dedit.cancel", ["Escape", None])
-        self.get_application().set_accels_for_action("cedit.save", ["Return", None])
-        self.get_application().set_accels_for_action("cedit.cancel", ["Escape", None])
         
     def show_url_prompt(self, *_):
         # New download prompt
-        self.prompt = URLPrompt(transient_for=self, application=self.get_application())
-        self.prompt.show()
+        URLPrompt(transient_for=self, application=self.get_application()).show()
 
     def preferences_action_handler(self, *_):
-        self.preferences = PreferencesWindow(transient_for=self, application=self.get_application())
-        self.preferences.show()
+        PreferencesWindow(transient_for=self, application=self.get_application()).show()
 
     def about_action_handler(self, *_):
         app = self.get_application()
-        self.about = AboutDialog(app.version, application=app, transient_for=self)
-        self.about.show()
+        AboutDialog(app.version, application=app, transient_for=self).show()
 
     def shortcuts_action_handler(self, *_):
-        # TODO: Create shortcuts window
-        pass
+        Shortcuts().show()
 
 
 class MainApplication(Adw.Application):
@@ -121,6 +101,31 @@ class MainApplication(Adw.Application):
         Notifier.init(self)
         self.window = None
         self.version = version
+        # Raise window action
+        self.raise_action = Gio.SimpleAction(name='raise')
+        self.raise_action.connect('activate', self.raise_main_window)
+        self.raise_action.set_enabled(False)
+        self.add_action(self.raise_action)
+        # Setup shortcuts
+        self.setup_shortcuts()
+
+    def setup_shortcuts(self):
+        self.set_accels_for_action("win.preferences", ["<Ctrl>comma", None])
+        self.set_accels_for_action("win.shortcuts", ["<Ctrl>question", None])
+        self.set_accels_for_action("win.delete-selected", ["Delete", None])
+        self.set_accels_for_action("win.new", ["<Ctrl>n", None])
+        self.set_accels_for_action("win.discard-selection-mode", ["Escape", None])
+        self.set_accels_for_action("prompt.confirm", ["Return", None])
+        self.set_accels_for_action("prompt.cancel", ["Escape", None])
+        self.set_accels_for_action("dedit.save", ["Return", None])
+        self.set_accels_for_action("dedit.cancel", ["Escape", None])
+        self.set_accels_for_action("cedit.save", ["Return", None])
+        self.set_accels_for_action("cedit.cancel", ["Escape", None])
+
+
+    def raise_main_window(self, *__):
+        logging.debug("Raising window")
+        self.window.present()
 
     def do_activate(self):
         style_manager = Adw.StyleManager.get_default()
@@ -129,6 +134,7 @@ class MainApplication(Adw.Application):
         if not self.window:
             self.window = FlowWindow(application=self)
         self.window.show()
+        self.raise_action.set_enabled(True)
 
     def do_command_line(self, acl):
         parser = argparse.ArgumentParser(
