@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk" version="4.0"/>
   <template class="FlowWindow" parent="AdwApplicationWindow">
     <property name="title">Flow</property>
+    <property name="default-width">700</property>
     <property name="content">
       <object class="GtkBox">
         <property name="visible">1</property>
