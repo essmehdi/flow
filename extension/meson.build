@@ -14,3 +14,10 @@ if fs.is_dir('/usr/lib/mozilla/native-messaging-hosts')
         install_dir: '/usr/lib/mozilla/native-messaging-hosts'
     )
 endif
+
+if fs.is_dir('/etc/opt/chrome/native-messaging-hosts')
+    install_data(
+        'com.github.essmehdi.flow.json',
+        install_dir: '/etc/opt/chrome/native-messaging-hosts'
+    )
+endif
