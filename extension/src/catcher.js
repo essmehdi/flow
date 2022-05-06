@@ -15,7 +15,7 @@ browser.webRequest.onHeadersReceived.addListener(function (details) {
     if (details.type !== 'main_frame' && details.type !== 'sub_frame') return;
     const headers = details.responseHeaders;
     if (headers.find(header => header.name.toLowerCase() === 'content-disposition' && !header.value.startsWith("inline"))) {
-        browser.storage.local.get(details.requestId).then(item => {
+        browser.storage.local.get(details.requestId, function(item) {
             browser.runtime.sendNativeMessage(
                 "com.github.essmehdi.flow", {
                     "url": details.url,
