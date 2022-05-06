@@ -23,7 +23,7 @@ class Toaster():
             logging.error("The object passed is not a valid overlay")
 
     @staticmethod
-    def show(self, text, action = None, timeout = 3, priority = Adw.ToastPriority.NORMAL):
+    def show(text, action = None, timeout = 3, priority = Adw.ToastPriority.NORMAL):
         if not Toaster.overlay:
             logging.error("No overlay registered")
         else:
