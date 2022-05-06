@@ -6,6 +6,14 @@ conf.set('VERSION', meson.project_version())
 conf.set('localedir', join_paths(get_option('prefix'), get_option('localedir')))
 conf.set('pkgdatadir', pkgdatadir)
 
+configure_file(
+  input: 'load.py.in',
+  output: 'flow',
+  configuration: conf,
+  install: true,
+  install_dir: get_option('bindir')
+)
+
 sources = [
     '__init__.py',
     'main.py',

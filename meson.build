@@ -14,14 +14,6 @@ subdir('flow')
 subdir('extension')
 subdir('po')
 
-configure_file(
-  input: 'load.py.in',
-  output: 'flow',
-  configuration: conf,
-  install: true,
-  install_dir: get_option('bindir')
-)
-
 import('gnome').post_install(
   glib_compile_schemas: true,
   gtk_update_icon_cache: true,
