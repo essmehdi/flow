@@ -8,7 +8,7 @@ from flow.utils.notifier import Notifier
 
 from flow.utils.misc import create_download_temp, file_extension_match
 
-from flow.utils.status_manager import StatusManager
+from flow.core.status_manager import StatusManager
 import logging
 import shutil
 import mimetypes

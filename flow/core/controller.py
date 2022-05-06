@@ -1,7 +1,7 @@
 from flow.ui.browser_wait import BrowserWait
 from flow.utils.notifier import Notifier
 from flow.core.download import Download
-from flow.utils.status_manager import StatusManager
+from flow.core.status_manager import StatusManager
 from gi.repository import Gio, Gtk, GObject, Gdk, GLib
 from gettext import gettext as _
 import logging
@@ -320,7 +320,7 @@ class DownloadsController(GObject.GObject):
             index += 1
         return -1
 
-    def _foreach(self, box, row, *_):
+    def _foreach(self, box, row, *__):
         logging.debug(row.filename)
 
     def _binder(self, item):

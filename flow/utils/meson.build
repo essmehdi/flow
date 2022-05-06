@@ -4,7 +4,6 @@ sources = [
     '__init__.py',
     'misc.py',
     'notifier.py',
-    'status_manager.py',
     'toaster.py'
 ]
 
