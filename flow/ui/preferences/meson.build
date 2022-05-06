@@ -1,4 +1,4 @@
-moduledir = join_paths(pkgdatadir, 'flow/preferences')
+moduledir = join_paths(pkgdatadir, 'flow/ui/preferences')
 
 sources = [
     '__init__.py',

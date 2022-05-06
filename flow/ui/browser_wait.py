@@ -41,5 +41,5 @@ class BrowserWait(Adw.Window):
         self.url.set_label(url)
 
     def cancel(self, *__):
-        from ..controller import DownloadsController
+        from ..core.controller import DownloadsController
         DownloadsController.get_instance().cancel_wait_for_link()

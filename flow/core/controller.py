@@ -1,7 +1,7 @@
-from flow.components.browser_wait import BrowserWait
-from flow.notifier import Notifier
-from flow.download import Download
-from flow.status_manager import StatusManager
+from flow.ui.browser_wait import BrowserWait
+from flow.utils.notifier import Notifier
+from flow.core.download import Download
+from flow.utils.status_manager import StatusManager
 from gi.repository import Gio, Gtk, GObject, Gdk, GLib
 from gettext import gettext as _
 import logging
@@ -64,14 +64,14 @@ class DownloadsController(GObject.GObject):
 
     def enable_edit_mode(self, id):
         download = self._get_download(id)
-        from .components.download_edit import DownloadEdit
+        from ..ui.download_edit import DownloadEdit
         edit_window = DownloadEdit(False, download.id, download.url, download.filename, download.output_directory, transient_for=download.row.get_root(), application=download.row.get_root().get_application())
         edit_window.show()
         download.edit_mode = True
 
     def confirm_download(self, download):
         download.row.get_root().present()
-        from .components.download_edit import DownloadEdit
+        from ..ui.download_edit import DownloadEdit
         edit_window = DownloadEdit(True, download.id, download.url, download.filename, download.output_directory, transient_for=download.row.get_root(), application=download.row.get_root().get_application())
         edit_window.show()
         download.edit_mode = True
@@ -324,7 +324,7 @@ class DownloadsController(GObject.GObject):
         logging.debug(row.filename)
 
     def _binder(self, item):
-        from .components.download_item import DownloadItem
+        from ..ui.download_item import DownloadItem
         row = DownloadItem()
         item.bind_property("id", row, "id", GObject.BindingFlags.SYNC_CREATE)
         item.bind_property("status", row, "status", GObject.BindingFlags.SYNC_CREATE)

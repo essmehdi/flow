@@ -2,7 +2,7 @@ import os
 from gi.repository import Gtk, Adw, Gio
 from gettext import gettext as _
 
-from flow.controller import DownloadsController
+from flow.core.controller import DownloadsController
 
 @Gtk.Template(resource_path="/com/github/essmehdi/flow/layout/download_edit.ui")
 class DownloadEdit(Adw.Window):

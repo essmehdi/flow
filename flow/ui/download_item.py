@@ -1,10 +1,10 @@
 import logging
 from gi.repository import Gtk, GLib, GObject, Gio, Gdk
 from gettext import gettext as _
-from flow.components.download_edit import DownloadEdit
-from flow.download import Download
-from flow.controller import DownloadsController
-from flow.utils import convert_size, get_eta
+from flow.ui.download_edit import DownloadEdit
+from flow.core.download import Download
+from flow.core.controller import DownloadsController
+from flow.utils.misc import convert_size, get_eta
 
 
 @Gtk.Template(resource_path="/com/github/essmehdi/flow/layout/download_item.ui")

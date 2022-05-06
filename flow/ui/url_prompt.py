@@ -1,7 +1,7 @@
 import validators
 from gi.repository import Gtk, Adw, Gio
 
-from flow.controller import DownloadsController
+from flow.core.controller import DownloadsController
 
 @Gtk.Template(resource_path="/com/github/essmehdi/flow/layout/url_prompt.ui")
 class URLPrompt(Adw.Window):

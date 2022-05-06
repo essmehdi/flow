@@ -1,7 +1,7 @@
 import logging
 
-from flow.settings import Settings
-from flow.preferences.category_editor import CategoryEditor
+from flow.core.settings import Settings
+from flow.ui.preferences.category_editor import CategoryEditor
 from gi.repository import Gtk, Adw
 from gettext import gettext as _
 

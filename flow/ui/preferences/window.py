@@ -1,8 +1,8 @@
 from .category_editor import CategoryEditor
 
-from flow.settings import Settings
-from flow.preferences.category_row import CategoryRow
-from flow.components.file_chooser_button import FileChooserButton # Necessary for Gtk.Builder
+from flow.core.settings import Settings
+from flow.ui.preferences.category_row import CategoryRow
+from flow.ui.file_chooser_button import FileChooserButton # Necessary for Gtk.Builder
 
 from gi.repository import Gtk, Adw, Gio
 

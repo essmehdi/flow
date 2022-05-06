@@ -1,6 +1,4 @@
-import os
-
-from flow.settings import Settings
+from flow.core.settings import Settings
 from gi.repository import Gtk, Adw, Gio
 from gettext import gettext as _
 

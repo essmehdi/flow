@@ -3,19 +3,19 @@ import gi
 import sys
 import logging
 
-from flow.notifier import Notifier
+from flow.utils.notifier import Notifier
 
-from flow.toaster import Toaster
+from flow.utils.toaster import Toaster
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 
 from gi.repository import Gtk, Adw, Gio, GObject
-from flow.preferences.window import PreferencesWindow
-from flow.controller import DownloadsController
-from flow.components.url_prompt import URLPrompt
-from flow.about import AboutDialog
-from flow.settings import Settings
+from flow.ui.preferences.window import PreferencesWindow
+from flow.core.controller import DownloadsController
+from flow.ui.url_prompt import URLPrompt
+from flow.ui.about import AboutDialog
+from flow.core.settings import Settings
 from gettext import gettext as _
 import argparse
 
