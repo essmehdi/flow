@@ -18,15 +18,11 @@ You can find the extension for Firefox [here](https://addons.mozilla.org/en-US/f
 
 ### Dependencies
 
-You need to install some python dependencies from PIP: `validators` and `pycurl`. Run the command below to get them:
-
-```shell
-pip install validators pycurl
-```
+You need to install some python dependencies from PIP: `validators` and `pycurl`.
 
 ### Build from source
 
-To build from source, clone this repository and build the project with Meson:
+To build from source & install (system-wide), clone this repository and build the project with Meson:
 
 ```shell
 git clone https://gitlab.com/essmehdi/flow.git
