@@ -19,4 +19,5 @@ class Notifier():
         notification.set_body(body)
         notification.set_icon(Gio.ThemedIcon.new(icon))
         notification.set_priority(urgency)
+        notification.set_default_action('app.raise')
         Notifier.app.send_notification(id, notification)
