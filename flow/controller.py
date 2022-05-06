@@ -1,8 +1,7 @@
-from email.mime import application
-from .components.browser_wait import BrowserWait
-from .notifier import Notifier
-from .download import Download
-from .status_manager import StatusManager
+from flow.components.browser_wait import BrowserWait
+from flow.notifier import Notifier
+from flow.download import Download
+from flow.status_manager import StatusManager
 from gi.repository import Gio, Gtk, GObject, Gdk, GLib
 from gettext import gettext as _
 import logging

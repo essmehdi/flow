@@ -4,19 +4,19 @@ import uuid
 from gi.repository import GObject, GLib, Gio
 import pycurl
 
-from .notifier import Notifier
+from flow.notifier import Notifier
 
-from .utils import create_download_temp, file_extension_match
+from flow.utils import create_download_temp, file_extension_match
 
-from .status_manager import StatusManager
+from flow.status_manager import StatusManager
 import logging
 import shutil
 import mimetypes
 import cgi
 import time
 from urllib.parse import unquote, urlparse
-from .settings import Settings
-from .toaster import Toaster
+from flow.settings import Settings
+from flow.toaster import Toaster
 from gettext import gettext as _
 import validators
 

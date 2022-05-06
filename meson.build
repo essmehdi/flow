@@ -10,7 +10,7 @@ pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.proje
 moduledir = join_paths(pkgdatadir, 'flow')
 
 subdir('resources')
-subdir('src')
+subdir('flow')
 subdir('extension')
 subdir('po')
 

@@ -1,6 +1,6 @@
 import os
 
-from ..settings import Settings
+from flow.settings import Settings
 from gi.repository import Gtk, Adw, Gio
 from gettext import gettext as _
 

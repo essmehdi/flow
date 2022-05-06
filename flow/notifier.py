@@ -1,3 +1,4 @@
+import logging
 from gi.repository import Gio
 
 class Notifier():
@@ -10,6 +11,9 @@ class Notifier():
 
     @staticmethod
     def notify(id, title = "", body = "", icon = None, urgency = Gio.NotificationPriority.NORMAL):
+        if Notifier.app is None:
+            logging.error("Application not launched")
+            return
         notification = Gio.Notification()
         notification.set_title(title)
         notification.set_body(body)
