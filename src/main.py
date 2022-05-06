@@ -3,13 +3,14 @@ import gi
 import sys
 import logging
 
+from .notifier import Notifier
+
 from .toaster import Toaster
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-gi.require_version("Notify", "0.7")
 
-from gi.repository import Gtk, Adw, Gio, GObject, Notify
+from gi.repository import Gtk, Adw, Gio, GObject
 from .preferences.window import PreferencesWindow
 from .controller import DownloadsController
 from .components.url_prompt import URLPrompt
@@ -65,7 +66,7 @@ class FlowWindow(Adw.ApplicationWindow):
         # Init the controller
         DownloadsController.get_instance().load_ui(self)
         # Register toast overlay
-        Toaster.get_instance().register_overlay(self.toast_overlay)
+        Toaster.register_overlay(self.toast_overlay)
         # Setup shortcuts
         self.setup_shortcuts()
         self.prompt = None
@@ -117,6 +118,7 @@ class MainApplication(Adw.Application):
 
     def __init__(self, version, **kwargs):
         super().__init__(application_id="com.github.essmehdi.flow", **kwargs)
+        Notifier.init(self)
         self.window = None
         self.version = version
 

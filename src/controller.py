@@ -3,7 +3,7 @@ from .components.browser_wait import BrowserWait
 from .notifier import Notifier
 from .download import Download
 from .status_manager import StatusManager
-from gi.repository import Gio, Gtk, GObject, Gdk, Notify, GLib
+from gi.repository import Gio, Gtk, GObject, Gdk, GLib
 from gettext import gettext as _
 import logging
 
@@ -98,7 +98,7 @@ class DownloadsController(GObject.GObject):
         self.finished_downloads.insert(0, download)
         self._update_ui()
         # Notify user
-        Notifier.notify(_("Download finished"), download.filename, "folder-download-symbolic")
+        Notifier.notify(id, _("Download finished"), download.filename, "folder-download-symbolic")
     
     def add_from_url(self, url, headers=None, raw_headers=None):
         if self.waiting_for_link is None:

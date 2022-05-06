@@ -1,7 +1,7 @@
 import os
 import threading
 import uuid
-from gi.repository import GObject, GLib, Gio, Notify
+from gi.repository import GObject, GLib, Gio
 import pycurl
 
 from .notifier import Notifier
@@ -91,7 +91,7 @@ class Download(GObject.Object):
             new_temp_file = create_download_temp(self.id)
             status = StatusManager.register_download(self.id, url=url, tmp=new_temp_file.get_path())
             # Notify user
-            Notifier.notify(_("Download initiated"), url, "folder-download-symbolic")
+            Notifier.notify(self.id, _("Download initiated"), url, "folder-download-symbolic")
         else:
             self.id = id
         self.populate_properties(status)
@@ -306,7 +306,7 @@ class Download(GObject.Object):
                 self.status = Download.STATUS_CONNECTION_ERROR
         # Notify user
         if args[0] != pycurl.E_ABORTED_BY_CALLBACK:
-            Notifier.notify(_("Downlod error"), _("An error occured while downloading"), "folder-download-symbolic")
+            Notifier.notify(self.id, _("Downlod error"), _("An error occured while downloading"), "folder-download-symbolic")
 
     def get_output_file_path(self):
         if self.output_directory:
@@ -363,10 +363,10 @@ class Download(GObject.Object):
                 logging.debug(f"Launching file: {file_path}")
                 Gio.AppInfo.launch_default_for_uri("file://" + file_path)
             else:
-                Toaster.get_instance().show(_("The file has been moved or deleted"))
+                Toaster.show(_("The file has been moved or deleted"))
         else:
             self.open_on_finish = True
-            Toaster.get_instance().show(_("The file will be automatically opened once download is finished"))
+            Toaster.show(_("The file will be automatically opened once download is finished"))
 
     def open_folder(self):
         if self.status == 'done':
