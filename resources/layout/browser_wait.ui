@@ -85,17 +85,17 @@
                                                 <property name="halign">center</property>
                                                 <child>
                                                     <object class="GtkButton">
+                                                        <property name="label" translatable="yes">No</property>
+                                                        <property name="action-name">bwait.separate</property>
+                                                    </object>
+                                                </child>
+                                                <child>
+                                                    <object class="GtkButton">
                                                         <property name="label" translatable="yes">Yes</property>
                                                         <property name="action-name">bwait.use-link</property>
                                                         <style>
                                                             <class name="suggested-action" />
                                                         </style>
-                                                    </object>
-                                                </child>
-                                                <child>
-                                                    <object class="GtkButton">
-                                                        <property name="label" translatable="yes">No</property>
-                                                        <property name="action-name">bwait.separate</property>
                                                     </object>
                                                 </child>
                                             </object>
