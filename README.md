@@ -1,6 +1,6 @@
 # Flow - The download manager for GNOME
 
-![](screenshots/1.png)
+![](screenshots/main.png)
 
 A utility application to automatically organize and keep track of your downloads designed for GNOME. This project is still in development.
 
