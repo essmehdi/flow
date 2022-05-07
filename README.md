@@ -25,7 +25,7 @@ You need to install some python dependencies from PIP: `validators` and `pycurl`
 To build from source & install (system-wide), clone this repository and build the project with Meson:
 
 ```shell
-git clone https://gitlab.com/essmehdi/flow.git
+git clone https://github.com/essmehdi/flow.git
 cd flow
 meson build --prefix=/usr/local
 sudo ninja -C build install
