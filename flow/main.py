@@ -15,6 +15,7 @@ from flow.core.controller import DownloadsController
 from flow.ui.url_prompt import URLPrompt
 from flow.ui.about import AboutDialog
 from flow.core.settings import Settings
+from flow.utils.app_info import AppInfo
 from gettext import gettext as _
 import argparse
 
@@ -66,6 +67,9 @@ class FlowWindow(Adw.ApplicationWindow):
         DownloadsController.get_instance().load_ui(self)
         # Register toast overlay
         Toaster.register_overlay(self.toast_overlay)
+        # Devel header
+        if AppInfo.profile == 'development':
+            self.add_css_class('devel')
         # Save window state
         settings = Gio.Settings("com.github.essmehdi.flow")
         settings.bind('window-width', self, 'default-width', Gio.SettingsBindFlags.DEFAULT)
@@ -97,7 +101,7 @@ class MainApplication(Adw.Application):
     version = GObject.Property(type=str, default="", flags=GObject.ParamFlags.READWRITE)
 
     def __init__(self, version, **kwargs):
-        super().__init__(application_id="com.github.essmehdi.flow", **kwargs)
+        super().__init__(application_id=AppInfo.app_id, **kwargs)
         Notifier.init(self)
         self.window = None
         self.version = version
@@ -121,7 +125,6 @@ class MainApplication(Adw.Application):
         self.set_accels_for_action("dedit.cancel", ["Escape", None])
         self.set_accels_for_action("cedit.save", ["Return", None])
         self.set_accels_for_action("cedit.cancel", ["Escape", None])
-
 
     def raise_main_window(self, *__):
         logging.debug("Raising window")

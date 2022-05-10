@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=0.1.0
-Name=Flow
+Name=@appname@
 Comment=A download manager for GNOME
 Exec=flow
-Icon=com.github.essmehdi.flow
+Icon=@appid@
 Terminal=false
 Type=Application
 Keywords=Productivity;Download;Manager;

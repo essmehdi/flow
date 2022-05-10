@@ -7,7 +7,6 @@ import gettext
 
 VERSION = "@VERSION@"
 pkgdatadir = "@pkgdatadir@"
-# Preparing for translation
 localedir = '@localedir@'
 
 try:
@@ -27,6 +26,11 @@ if __name__ == "__main__":
     from gi.repository import Gio
     resources = Gio.Resource.load(os.path.join(pkgdatadir, 'flow.gresource'))
     resources._register()
+
+    from flow.utils.app_info import AppInfo
+    AppInfo.app_id = "@appid@"
+    AppInfo.name = "@appname@"
+    AppInfo.profile = "@profile@"
 
     from flow import main
     main.main(VERSION)

@@ -1,4 +1,4 @@
-moduledir = join_paths(pkgdatadir, 'flow/core')
+moduledir = pkgdatadir / 'flow' / 'core'
 
 sources = [
     '__init__.py',
