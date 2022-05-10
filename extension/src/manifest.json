@@ -8,17 +8,10 @@
             "id": "flowcatcher.essmehdi@github.com"
         }
     },
-    "content_scripts": [
-        {
-            "matches": ["http://*/*", "https://*/*"],
-            "js": ["links.js"],
-            "run_at": "document_end"
-        }
-    ],
     "background": {
         "scripts": ["catcher.js"]
     },
     "permissions": [
-        "downloads", "nativeMessaging", "webRequest", "webRequestBlocking", "storage", "cookies", "<all_urls>"
+        "menus", "downloads", "nativeMessaging", "webRequest", "webRequestBlocking", "storage", "cookies", "<all_urls>"
     ]
 }
