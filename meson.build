@@ -11,8 +11,8 @@ if profile == 'development'
   app_name = app_name + ' (Devel)'
   app_id = app_id + '.devel'
   if fs.is_dir('.git')
-    git_rev = run_command('git', 'rev-parse', '--short', 'HEAD')
-    if not git_rev == ''
+    git_rev = run_command('git', 'rev-parse', '--short', 'HEAD', check: false).stdout().strip()
+    if git_rev != ''
       v_suffix = '-@0@'.format(git_rev)
     endif
   endif
