@@ -1,6 +1,6 @@
 project('flow', version: '0.1.0',)
 
-fs = require('fs')
+fs = import('fs')
 
 profile = get_option('profile')
 app_name = 'Flow'
