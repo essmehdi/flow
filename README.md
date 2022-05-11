@@ -17,6 +17,7 @@ You can find the extension for Firefox [here](https://addons.mozilla.org/en-US/f
 ## Build from source
 
 **Linux dependencies** `python3`, `meson`, `gtk4`, `libadwaita-1` and `libcurl`.
+
 **Python dependencies** `validators` and `pycurl`.
 
 To build from source & install, clone this repository and build the project with Meson:
