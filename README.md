@@ -14,15 +14,12 @@ For now, it is only available for Firefox.
 
 You can find the extension for Firefox [here](https://addons.mozilla.org/en-US/firefox/addon/flow-intercepter/).
 
-## Installation
+## Build from source
 
-### Dependencies
+**Linux dependencies** `python3`, `meson`, `gtk4`, `libadwaita-1` and `libcurl`.
+**Python dependencies** `validators` and `pycurl`.
 
-You need to install some python dependencies from PIP: `validators` and `pycurl`.
-
-### Build from source
-
-To build from source & install (system-wide), clone this repository and build the project with Meson:
+To build from source & install, clone this repository and build the project with Meson:
 
 ```shell
 git clone https://github.com/essmehdi/flow.git
