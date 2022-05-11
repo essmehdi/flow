@@ -251,7 +251,7 @@ class DownloadsController(GObject.GObject):
             else:
                 # Weeks scale
                 if hours < 168:
-                    if finished.get_day_of_week() > today.get_day_of_week():
+                    if finished.get_day_of_week() >= today.get_day_of_week():
                         row.date_tag = row.DATE_TAG_LAST_WEEK
                     else:
                         row.date_tag = finished.format('%A')
