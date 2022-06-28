@@ -29,12 +29,12 @@ class DownloadsController(GObject.GObject):
         self.running_downloads = Gio.ListStore.new(Download)
 
         finished_downloads = StatusManager.get_downloads(True)
-        for id, item in finished_downloads.items():
-            self.finished_downloads.insert(0, Download(id=id, status=item))
+        for item in finished_downloads:
+            self.finished_downloads.insert(0, Download(id=item['id'], status=item))
 
         running_downloads = StatusManager.get_downloads(False)
-        for id, item in running_downloads.items():
-            self.running_downloads.insert(0, Download(id=id, status=item))
+        for item in running_downloads:
+            self.running_downloads.insert(0, Download(id=item['id'], status=item))
 
         self.finished_list_box = None
         self.running_list_box = None

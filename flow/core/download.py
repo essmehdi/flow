@@ -87,11 +87,10 @@ class Download(GObject.Object):
         self.ua = None
         if not status:
             # Means that this is a new download
-            self.id = str(uuid.uuid4())
-            new_temp_file = create_download_temp(self.id)
-            status = StatusManager.register_download(self.id, url=url, tmp=new_temp_file.get_path())
+            new_temp_file = create_download_temp(str(uuid.uuid4()))
+            status = StatusManager.register_download(url=url, tmp=new_temp_file.get_path())
             # Notify user
-            Notifier.notify(self.id, _("Download initiated"), url, "folder-download-symbolic")
+            Notifier.notify(str(status['id']), _("Download initiated"), url, "folder-download-symbolic")
         else:
             self.id = id
         self.populate_properties(status)
@@ -119,8 +118,10 @@ class Download(GObject.Object):
 
     def populate_properties(self, status: dict):
         # Populate properties with provided status object
-        for property, value in status.items():
-            setattr(self, property, value)
+        for property in status.keys():
+            value = status[property]
+            if value is not None:
+                setattr(self, property, value)
 
     def setup(self):
         if self.status != Download.STATUS_DONE:
@@ -388,7 +389,7 @@ class Download(GObject.Object):
                 logging.debug("Waiting for cancellation...")
                 time.sleep(0.5)
         try:
-            StatusManager.remove_download(self.id, self.status == 'done', delete_file)
+            StatusManager.remove_download(self.id, delete_file)
         except:
             logging.exception("Failed to delete download")
             return False

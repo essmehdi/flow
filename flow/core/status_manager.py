@@ -1,95 +1,106 @@
 import logging
 import os
 import json
+import sqlite3
 from gi.repository import GLib
-
-class DownloadNotFound(Exception):
-    pass
 
 class StatusManager:
 
-    @staticmethod
-    def add_to_finished(id: str, download: dict):
-        with StatusManager.get_status_file(True) as file:
-            status = json.loads(file.read())
-            status[id] = download
-            file.seek(0)
-            file.write(json.dumps(status))
-            file.truncate()
+    DB_PATH = os.path.join(GLib.get_home_dir(), '.flow/data.db')
 
     @staticmethod
-    def download_finished(id: str):
-        finished_id, download = StatusManager.remove_download(id, False, False)
-        StatusManager.add_to_finished(finished_id, download)
+    def create_tables():
+        con = sqlite3.connect(StatusManager.DB_PATH)
+        cur = con.cursor()
+        cur.execute('''CREATE TABLE downloads (
+                id INTEGER CONSTRAINT pk_id PRIMARY KEY,
+                filename TEXT,
+                url TEXT,
+                date_initiated INTEGER,
+                date_started INTEGER,
+                date_finished INTEGER,
+                tmp TEXT,
+                custom_headers TEXT,
+                status TEXT,
+                category TEXT,
+                output_directory TEXT,
+                size INTEGER,
+                resumable INTEGER,
+                info_parsed INTEGER
+            )''')   
+        con.commit()
+        con.close()
 
     @staticmethod
-    def get_status_file(finished=True):
-        home_dir = GLib.get_home_dir()
-        flow_status_file = os.path.join(home_dir, ".flow/finished.json" if finished else ".flow/running.json")
-        if not os.path.exists(os.path.dirname(flow_status_file)):
-            os.makedirs(os.path.dirname(flow_status_file), exist_ok=True)
-        if not os.path.exists(flow_status_file) or os.path.getsize(flow_status_file) == 0:
-            with open(flow_status_file, "w") as file:
-                file.write("{}")
-        return open(flow_status_file, 'r+')
+    def get_connection():
+        logging.info(f"Connecting to SQLite database: {StatusManager.DB_PATH}")
+        if not os.path.exists(StatusManager.DB_PATH):
+            StatusManager.create_tables()
+        con = sqlite3.connect(StatusManager.DB_PATH)
+        con.row_factory = sqlite3.Row
+        return con
 
     @staticmethod
     def get_downloads(finished):
-        with StatusManager.get_status_file(finished) as file:
-            return json.loads(file.read())    
+        with StatusManager.get_connection() as con:
+            cur = con.cursor()
+            cur.execute(f"SELECT * FROM downloads WHERE status {'=' if finished else '<>'} 'done' ORDER BY date_finished DESC",)
+            results = cur.fetchall()
+            cur.close()
+            return results
+        con.close()
 
     @staticmethod
-    def update_property(id: str, property: str, value):
-        with StatusManager.get_status_file(False) as file:
-            item_status = json.loads(file.read())
-            item_status[id][property] = value
-            file.seek(0)
-            file.write(json.dumps(item_status))
-            file.truncate()
+    def update_property(id, property, value):
+        with StatusManager.get_connection() as con:
+            query = f"UPDATE downloads SET { property } = ? WHERE id = ?"
+            cur = con.cursor()
+            cur.execute(query, (value, id))
+            cur.close()
+        con.close()
 
-    @staticmethod
-    def register_download(id, **kwargs):
-        item = { **kwargs, "date_initiated": GLib.DateTime.new_now_local().to_unix() }
-        with StatusManager.get_status_file(False) as file:
-            status = json.loads(file.read())
-            status[id] = item
-            file.seek(0)
-            file.write(json.dumps(status))
-            file.truncate()
-            return item
+    def register_download(**kwargs):
+        kwargs['date_initiated'] = GLib.DateTime.new_now_local().to_unix()
+        with StatusManager.get_connection() as con:    
+            columns = ','.join(kwargs.keys())
+            cur = con.cursor()
+            cur.execute(f"INSERT INTO downloads ({ columns }) VALUES (?{ ',?' * (len(kwargs.values())-1) })", tuple(kwargs.values()))
+            kwargs['id'] = cur.lastrowid
+            return kwargs
+        con.close()
 
-    @staticmethod
-    def get_status(id: str, finished: bool):
-        with StatusManager.get_status_file(finished) as file:
-            status = json.loads(file.read())
-            if id in status:
-                return status[id]
-            else:
-                raise DownloadNotFound(f"Cannot find a download with ID: {id}")
-
-    @staticmethod
-    def remove_download(id: str, finished: bool, delete_file:bool = False):
-        to_delete = None
-        with StatusManager.get_status_file(finished) as file:
-            status = json.loads(file.read())
-            if id in status:
-                download = status.get(id)
-                if delete_file and download.get('status') == 'done':
-                    path = os.path.join(download.get('output_directory'), download.get('filename'))
+    def remove_download(id, delete_file=False):
+        with StatusManager.get_connection() as con:
+            cur = con.cursor()
+            cur.execute('SELECT filename, output_directory, tmp, size, status FROM downloads WHERE id = ?', (id,))
+            result = cur.fetchone()
+            cur.close()
+            if result:
+                path = os.path.join(result['output_directory'], result['filename'])
+                if delete_file and result['status'] == 'done':
+                    path = os.path.join(result['output_directory'], result['filename'])
                     # A naive precaution to be sure it's the downloaded file
-                    if os.path.exists(path) and os.path.getsize(path) == download.get('size'):
+                    if os.path.exists(path) and os.path.getsize(path) == result['size']:
                         logging.info("File found. Deleting...")
                         os.remove(path)
                     else:
                         logging.info("File not found")
-                tmp = download.get('tmp')
-                if tmp and os.path.exists(tmp):
-                    os.remove(tmp)
-                to_delete = status[id]
-                del status[id]
+                if result['status'] != 'done':
+                    tmp = result['tmp']
+                    if tmp and os.path.exists(tmp):
+                        os.remove(tmp)
+
+                con.execute("DELETE FROM downloads WHERE id = ?", (id,))
             else:
-                raise DownloadNotFound(f"Cannot find a download with ID: {id}")
-            file.seek(0)
-            file.write(json.dumps(status))
-            file.truncate()
-            return (id, to_delete)
+                logging.error(f"Attempted to delete a non-existant download (ID: {id})")
+        con.close()
+        
+    @staticmethod
+    def download_finished(id):
+        with StatusManager.get_connection() as con:
+            con.execute("UPDATE downloads SET status = 'done' WHERE id = ?", (id,))
+        con.close()
+
+
+if __name__ == '__main__':
+    logging.info(StatusManagerDB.get_downloads(False))
