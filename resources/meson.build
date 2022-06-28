@@ -27,7 +27,7 @@ desktop_file = i18n.merge_file(
     ),
     type: 'desktop',
     po_dir: '../po',
-    output: 'com.github.essmehdi.flow.desktop',
+    output: '@0@.desktop'.format(app_id),
     install: true,
     install_dir: join_paths(get_option('datadir'), 'applications')
 )
