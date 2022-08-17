@@ -3,7 +3,7 @@ if (typeof browser === "undefined") {
 }
 
 const extensionsBlacklist = [
-    "html", "png", "jpg", "jpeg", "gif"
+    "html", "png", "jpg", "jpeg", "gif", "aspx", "php"
 ]
 
 // Context menu to force a download
