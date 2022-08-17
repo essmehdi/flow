@@ -11,6 +11,7 @@ class Notifier():
 
     @staticmethod
     def notify(id, title = "", body = "", icon = None, urgency = Gio.NotificationPriority.NORMAL):
+        logging.debug(f"Sending notification: {id} - {title} - {body}")
         if Notifier.app is None:
             logging.error("Application not launched")
             return
