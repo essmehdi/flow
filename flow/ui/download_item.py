@@ -159,12 +159,13 @@ class DownloadItem(Gtk.ListBoxRow):
             self.actions.lookup_action(action).set_enabled(action in actions or action == 'copy-url')
 
     def update_details_text(self):
-        self.details_text.set_label(
-            f"{convert_size(self.progress)}" +
-            (f" / {convert_size(self.size)}" if self.size > 0 else "") +
-            (f" • {self.eta}" if self.eta and self.status == Download.STATUS_STARTED else "") +
-            (f" • {self.speed}" if self.speed else "")
-        )
+        text = f"{convert_size(self.progress)}" + (f" / {convert_size(self.size)}" if self.size > 0 else "") + (f" • {self.eta}" if self.eta and self.status == Download.STATUS_STARTED else "")
+        if self.speed:
+            if self.speed == "0 B/s" and self.status == Download.STATUS_PAUSED:
+                text += " • Paused"
+            else:
+                text += f" • { self.speed }"
+        self.details_text.set_label(text)
 
     def on_progress_change(self, *_):
         # Speed & ETA
