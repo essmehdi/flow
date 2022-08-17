@@ -41,10 +41,12 @@ class StatusManager:
         return con
 
     @staticmethod
-    def get_downloads(finished):
+    def get_downloads(finished, category=None):
         with StatusManager.get_connection() as con:
             cur = con.cursor()
-            cur.execute(f"SELECT * FROM downloads WHERE status {'=' if finished else '<>'} 'done' ORDER BY date_finished DESC",)
+            request = f"SELECT * FROM downloads WHERE status {'=' if finished else '<>'} 'done' { 'WHERE category=?' if category else '' } ORDER BY date_finished ASC"
+            params = (category,) if category else tuple()
+            cur.execute(request, params)
             results = cur.fetchall()
             cur.close()
             return results
