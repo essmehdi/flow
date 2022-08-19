@@ -26,11 +26,11 @@ dependency('libadwaita-1')
 dependency('libcurl')
 
 # Separate release data from devel data
-folder_suffix = ''
+suffix = ''
 if profile == 'development'
-  folder_suffix = '-devel'
+  suffix = '-devel'
 endif
-pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
+pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name() + suffix)
 moduledir = join_paths(pkgdatadir, 'flow')
 
 subdir('resources')
