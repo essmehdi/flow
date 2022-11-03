@@ -245,7 +245,7 @@ msgid "Could not resume download"
 msgstr "فشل استئناف التحميل"
 
 #: src/components/download_item.py:125
-msgid "An error occured"
+msgid "An error occurred"
 msgstr "حدث خطأ"
 
 #: src/components/preferences/category_editor.py:86
