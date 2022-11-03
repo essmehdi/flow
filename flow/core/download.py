@@ -307,7 +307,7 @@ class Download(GObject.Object):
                 self.status = Download.STATUS_CONNECTION_ERROR
         # Notify user
         if args[0] != pycurl.E_ABORTED_BY_CALLBACK:
-            Notifier.notify(self.id, _("Downlod error"), _("An error occured while downloading"), "folder-download-symbolic")
+            Notifier.notify(self.id, _("Download error"), _("An error occurred while downloading"), "folder-download-symbolic")
 
     def get_output_file_path(self):
         if self.output_directory:

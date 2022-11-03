@@ -137,7 +137,7 @@ class DownloadItem(Gtk.ListBoxRow):
         elif "error" in self.status:
             self.state_stack.set_visible_child_name('restart')
             self.actions_stack.set_visible_child_name('cancel')
-            self.details_text.set_label(DownloadItem.ERROR_MESSAGES.get(self.status, _("An error occured")))
+            self.details_text.set_label(DownloadItem.ERROR_MESSAGES.get(self.status, _("An error occurred")))
             self.actions_activator('restart', 'delete', 'resume-with-link')
         elif self.status == "moving":
             self.details_text.set_label(_("Moving file..."))
@@ -179,7 +179,7 @@ class DownloadItem(Gtk.ListBoxRow):
         if time_delta >= 10**6:
             # Amount of data download in a second
             progress_delta = self.progress - self.last_progress
-            # Update the progess
+            # Update the progress
             if self.size > 0:
                 self.progress_bar.set_fraction(float(self.progress / self.size))
                 self.eta = get_eta(progress_delta, self.size - self.progress)

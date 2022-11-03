@@ -94,7 +94,7 @@ class StatusManager:
 
                 con.execute("DELETE FROM downloads WHERE id = ?", (id,))
             else:
-                logging.error(f"Attempted to delete a non-existant download (ID: {id})")
+                logging.error(f"Attempted to delete a non-existent download (ID: {id})")
         con.close()
         
     @staticmethod
