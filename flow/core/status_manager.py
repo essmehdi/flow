@@ -6,7 +6,8 @@ from gi.repository import GLib
 
 class StatusManager:
 
-    DB_PATH = os.path.join(GLib.get_home_dir(), '.flow/data.db')
+    DB_DIR = os.path.join(GLib.get_home_dir(), '.flow')
+    DB_PATH = os.path.join(DB_DIR, 'data.db')
 
     @staticmethod
     def create_tables():
@@ -35,6 +36,8 @@ class StatusManager:
     def get_connection():
         logging.info(f"Connecting to SQLite database: {StatusManager.DB_PATH}")
         if not os.path.exists(StatusManager.DB_PATH):
+            os.makedirs(StatusManager.DB_DIR, exist_ok=True)
+            open(StatusManager.DB_PATH, 'x').close()
             StatusManager.create_tables()
         con = sqlite3.connect(StatusManager.DB_PATH)
         con.row_factory = sqlite3.Row

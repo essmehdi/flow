@@ -16,8 +16,13 @@ from flow.ui.url_prompt import URLPrompt
 from flow.ui.about import AboutDialog
 from flow.core.settings import Settings
 from flow.utils.app_info import AppInfo
+from flow.core import daemon
 from gettext import gettext as _
 import argparse
+
+import faulthandler
+
+faulthandler.enable()
 
 
 @Gtk.Template(resource_path="/com/github/essmehdi/flow/layout/main.ui")

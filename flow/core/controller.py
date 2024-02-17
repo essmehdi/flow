@@ -2,6 +2,7 @@ from flow.ui.browser_wait import BrowserWait
 from flow.utils.notifier import Notifier
 from flow.core.download import Download
 from flow.core.status_manager import StatusManager
+from flow.core import daemon
 from gi.repository import Gio, Gtk, GObject, Gdk, GLib
 from gettext import gettext as _
 import logging
@@ -11,7 +12,9 @@ class DownloadsController(GObject.GObject):
     __gtype_name__ = "DownloadsController"
     __instance = None
 
-    selection_mode = GObject.Property(type=bool, default=False, flags=GObject.ParamFlags.READWRITE)
+    selection_mode = GObject.Property(
+        type=bool, default=False, flags=GObject.ParamFlags.READWRITE
+    )
 
     @staticmethod
     def get_instance():
@@ -25,16 +28,6 @@ class DownloadsController(GObject.GObject):
         else:
             DownloadsController.__instance = self
         GObject.GObject.__init__(self)
-        self.finished_downloads = Gio.ListStore.new(Download)
-        self.running_downloads = Gio.ListStore.new(Download)
-
-        finished_downloads = StatusManager.get_downloads(True)
-        for item in finished_downloads:
-            self.finished_downloads.insert(0, Download(id=item['id'], status=item))
-
-        running_downloads = StatusManager.get_downloads(False)
-        for item in running_downloads:
-            self.running_downloads.insert(0, Download(id=item['id'], status=item))
 
         self.finished_list_box = None
         self.running_list_box = None
@@ -44,6 +37,46 @@ class DownloadsController(GObject.GObject):
         self.selected_downloads = set()
         self.empty_stack = None
         self.waiting_for_link = None
+        self.ui_loaded = False
+        self.progress_subscription = None
+        self.update_subscription = None
+        self.error_subscription = None
+
+        self.finished_downloads = Gio.ListStore.new(Download)
+        self.running_downloads = Gio.ListStore.new(Download)
+        self.update_downloads_from_daemon()
+
+        self.update_subscription = daemon.subscribe_to_download_update(
+            lambda _, __, ___, ____, data: self._on_download_update(data[0])
+        )
+
+    def track_downloads_for_ui_change(self):
+        self.finished_downloads.connect("items-changed", lambda *_: self._update_ui())
+        self.running_downloads.connect("items-changed", lambda *_: self._update_ui())
+
+    def update_downloads_from_daemon(self):
+        downloads = daemon.get_sorted_downloads()
+        running = []
+        finished = []
+        for download in downloads:
+            if download.status == 5:
+                finished.append(download)
+            else:
+                running.append(download)
+        self.finished_downloads.splice(0, self.finished_downloads.get_n_items(), finished)
+        self.running_downloads.splice(0, self.running_downloads.get_n_items(), running)
+
+    def _on_download_update(self, download):
+        if download.get("status") == 5:
+            self.update_downloads_from_daemon()
+        else:
+            index = self._find_position_from_running(download.get("id"))
+            if index == -1:
+                self.update_downloads_from_daemon()
+            else:
+                d = self._get_download(download.get("id"))
+                if d is not None:
+                    d.update(**download)
 
     def load_ui(self, window):
         # Register UI components
@@ -56,7 +89,9 @@ class DownloadsController(GObject.GObject):
         self.running_list_box.bind_model(self.running_downloads, self._binder)
         self.delete_action = window.delete_selected
         self.empty_stack = window.empty_stack
+        self.ui_loaded = True
         self._update_ui()
+        self.track_downloads_for_ui_change()
 
     def disable_edit_mode(self, id):
         download = self._get_download(id)
@@ -65,21 +100,39 @@ class DownloadsController(GObject.GObject):
     def enable_edit_mode(self, id):
         download = self._get_download(id)
         from ..ui.download_edit import DownloadEdit
-        edit_window = DownloadEdit(False, download.id, download.url, download.filename, download.output_directory, transient_for=download.row.get_root(), application=download.row.get_root().get_application())
+
+        edit_window = DownloadEdit(
+            False,
+            download.id,
+            download.url,
+            download.filename,
+            download.output_directory,
+            transient_for=download.row.get_root(),
+            application=download.row.get_root().get_application(),
+        )
         edit_window.show()
         download.edit_mode = True
 
     def confirm_download(self, download):
         download.row.get_root().present()
         from ..ui.download_edit import DownloadEdit
-        edit_window = DownloadEdit(True, download.id, download.url, download.filename, download.output_directory, transient_for=download.row.get_root(), application=download.row.get_root().get_application())
+
+        edit_window = DownloadEdit(
+            True,
+            download.id,
+            download.url,
+            download.filename,
+            download.output_directory,
+            transient_for=download.row.get_root(),
+            application=download.row.get_root().get_application(),
+        )
         edit_window.show()
         download.edit_mode = True
-        
+
     def edit(self, id, new_filename, new_directory):
         logging.debug(f"Editing download - {new_filename} - {new_directory}")
         download = self._get_download(id)
-        if download.status != 'done':
+        if download.status != "done":
             if new_filename is not None:
                 download.filename = new_filename
             if new_directory is not None:
@@ -95,27 +148,33 @@ class DownloadsController(GObject.GObject):
         download = self.running_downloads.get_item(index)
         self.running_downloads.remove(index)
         self.finished_downloads.insert(0, download)
-        self._update_ui()
         # Notify user
-        Notifier.notify(id, _("Download finished"), download.filename, "folder-download-symbolic")
-    
+        Notifier.notify(
+            id, _("Download finished"), download.filename, "folder-download-symbolic"
+        )
+
     def add_from_url(self, url, headers=None, raw_headers=None):
         if self.waiting_for_link is None:
             self._create_download(url, headers, raw_headers)
         else:
             self._confirm_update(url, headers, raw_headers)
-            #self._update_link(url, headers, self.waiting_for_link[0], raw_headers is not None)
+            # self._update_link(url, headers, self.waiting_for_link[0], raw_headers is not None)
 
     def _create_download(self, url, headers, raw_headers):
-        self.running_downloads.insert(0, Download(url=url, headers=headers, raw_headers=raw_headers))
-        self._update_ui()
+        self.running_downloads.insert(
+            0, Download(url=url, headers=headers, raw_headers=raw_headers)
+        )
 
     def get_file(self, id):
         return self._get_download(id).get_file()
 
     def open(self, id, folder=False):
-        self._get_download(id).open_folder() if folder else self._get_download(id).open_file()
-        
+        (
+            self._get_download(id).open_folder()
+            if folder
+            else self._get_download(id).open_file()
+        )
+
     def pause(self, id):
         self._get_download(id).pause()
 
@@ -126,28 +185,38 @@ class DownloadsController(GObject.GObject):
         else:
             url = download.url
             self._delete_with_id(id)
-            self.add_from_url(url, raw_headers=download.custom_headers if download.custom_headers else None)
+            self.add_from_url(
+                url,
+                raw_headers=(
+                    download.custom_headers if download.custom_headers else None
+                ),
+            )
 
     def copy_url(self, id):
         # Set download URL as clipboard content
         clipboard = Gdk.Display.get_default().get_clipboard()
-        clipboard.set_content(Gdk.ContentProvider.new_for_value(self._get_download(id).url))
+        clipboard.set_content(
+            Gdk.ContentProvider.new_for_value(self._get_download(id).url)
+        )
 
     def resume_with_link(self, id):
         download = self._get_download(id)
-        popup = BrowserWait(transient_for=download.row.get_root(), application=download.row.get_root().get_application())
+        popup = BrowserWait(
+            transient_for=download.row.get_root(),
+            application=download.row.get_root().get_application(),
+        )
         popup.show()
         self.waiting_for_link = (download, popup)
-    
+
     def cancel_wait_for_link(self):
         self.waiting_for_link[1].destroy()
         self.waiting_for_link = None
-    
+
     def _confirm_update(self, *download_details):
         self.waiting_for_link[1].show_confirm_dialog(
             download_details[0],
-            lambda *__: self._update_link(*download_details), # Confirm
-            lambda *__: self._separate_download(download_details) # Cancel
+            lambda *__: self._update_link(*download_details),  # Confirm
+            lambda *__: self._separate_download(download_details),  # Cancel
         )
 
     def _separate_download(self, download_details):
@@ -161,7 +230,9 @@ class DownloadsController(GObject.GObject):
         self.waiting_for_link = None
         download.resumable = True
         download.url = url
-        download.setup_request_headers(headers if headers is not None else raw_headers, raw_headers is not None)
+        download.setup_request_headers(
+            headers if headers is not None else raw_headers, raw_headers is not None
+        )
         download.resume()
 
     def delete(self, id, delete_file=False):
@@ -192,11 +263,10 @@ class DownloadsController(GObject.GObject):
         download = d_list.get_item(index)
         if download.delete(delete_file):
             d_list.remove(index)
-            self._update_ui()
         # Check if it exists in selected downloads & remove it
         if self.selection_mode and download.id in self.selected_downloads:
             self.unselect(download.id)
-    
+
     def _delete_with_id(self, id, delete_file=False):
         index = self._find_position_from_finished(id)
         if index != -1:
@@ -211,11 +281,11 @@ class DownloadsController(GObject.GObject):
         delete_files_check = Gtk.CheckButton()
         delete_files_check.set_label(_("Delete with files"))
         confirm_dialog = Gtk.MessageDialog(
-            transient_for = window,
-            message_type = Gtk.MessageType.WARNING,
-            buttons = Gtk.ButtonsType.YES_NO,
-            text = _("Are you sure ?"),
-            secondary_text = _("This will delete the selected download(s) from history.")
+            transient_for=window,
+            message_type=Gtk.MessageType.WARNING,
+            buttons=Gtk.ButtonsType.YES_NO,
+            text=_("Are you sure ?"),
+            secondary_text=_("This will delete the selected download(s) from history."),
         )
         confirm_dialog.get_message_area().append(delete_files_check)
         confirm_dialog.connect("response", self._delete_dialog_response)
@@ -227,18 +297,20 @@ class DownloadsController(GObject.GObject):
         dialog.destroy()
         if response == Gtk.ResponseType.YES:
             self._confirm_delete_selected(delete_files_response)
-    
+
     def _confirm_delete_selected(self, delete_files=False):
-        selected_list = [ self._get_download(id) for id in self.selected_downloads ]
+        selected_list = [self._get_download(id) for id in self.selected_downloads]
         for row in selected_list:
             self._delete_with_id(row.id, delete_files)
         self.disable_selection()
 
     def _update_row_date_tag(self, row):
-        if row.date_finished != 0:
+        if row.date_completed != 0:
             today: GLib.DateTime = GLib.DateTime.new_now_local()
-            finished: GLib.DateTime = GLib.DateTime.new_from_unix_local(row.date_finished)
-            delta = today.difference(finished) // 10**6 # From microseconds to seconds
+            finished: GLib.DateTime = GLib.DateTime.new_from_unix_local(
+                row.date_completed
+            )
+            delta = today.difference(finished) // 10**6  # From microseconds to seconds
             hours = delta / 3600
             if 0 <= hours < 24:
                 # Day scale
@@ -254,8 +326,10 @@ class DownloadsController(GObject.GObject):
                     if finished.get_day_of_week() >= today.get_day_of_week():
                         row.date_tag = row.DATE_TAG_LAST_WEEK
                     else:
-                        row.date_tag = finished.format('%A')
-                elif hours < 336 and finished.get_day_of_week() < today.get_day_of_week():
+                        row.date_tag = finished.format("%A")
+                elif (
+                    hours < 336 and finished.get_day_of_week() < today.get_day_of_week()
+                ):
                     row.date_tag = row.DATE_TAG_LAST_WEEK
                 else:
                     # Month scale
@@ -291,7 +365,7 @@ class DownloadsController(GObject.GObject):
             row.set_header(label)
         elif row.get_header() is not None:
             row.set_header(None)
-        
+
     def _get_download(self, id):
         # Search in finished list
         index = self._find_position_from_finished(id)
@@ -311,7 +385,7 @@ class DownloadsController(GObject.GObject):
                 return index
             index += 1
         return -1
-    
+
     def _find_position_from_running(self, id):
         index = 0
         for download in self.running_downloads:
@@ -325,31 +399,56 @@ class DownloadsController(GObject.GObject):
 
     def _binder(self, item):
         from ..ui.download_item import DownloadItem
-        row = DownloadItem()
+
+        row = DownloadItem(
+            id=item.id,
+            status=item.status,
+            url=item.url,
+            temp_file=item.temp_file,
+            output_file=item.output_file,
+            detected_output_file=item.detected_output_file,
+            date_added=item.date_added,
+            date_completed=item.date_completed,
+            size=item.size,
+            resumable=item.resumable,
+        )
         item.bind_property("id", row, "id", GObject.BindingFlags.SYNC_CREATE)
         item.bind_property("status", row, "status", GObject.BindingFlags.SYNC_CREATE)
-        item.bind_property("filename", row, "filename", GObject.BindingFlags.SYNC_CREATE)
-        item.bind_property("resumable", row, "resumable", GObject.BindingFlags.SYNC_CREATE)
-        item.bind_property("progress", row, "progress", GObject.BindingFlags.SYNC_CREATE)
-        item.bind_property("size", row, "size", GObject.BindingFlags.SYNC_CREATE)
         item.bind_property("url", row, "url", GObject.BindingFlags.SYNC_CREATE)
-        item.bind_property("output_directory", row, "output_directory", GObject.BindingFlags.SYNC_CREATE)
-        item.bind_property("category", row, "category", GObject.BindingFlags.SYNC_CREATE)
-        item.bind_property("date_started", row, "date_started", GObject.BindingFlags.SYNC_CREATE)
-        item.bind_property("date_initiated", row, "date_initiated", GObject.BindingFlags.SYNC_CREATE)
-        item.bind_property("date_finished", row, "date_finished", GObject.BindingFlags.SYNC_CREATE)
-        self.bind_property("selection_mode", row, "selection_mode", GObject.BindingFlags.SYNC_CREATE)
+        item.bind_property(
+            "temp_file", row, "temp_file", GObject.BindingFlags.SYNC_CREATE
+        )
+        item.bind_property(
+            "output_file", row, "output_file", GObject.BindingFlags.SYNC_CREATE
+        )
+        item.bind_property(
+            "detected_output_file",
+            row,
+            "detected_output_file",
+            GObject.BindingFlags.SYNC_CREATE,
+        )
+        item.bind_property(
+            "date_added", row, "date_added", GObject.BindingFlags.SYNC_CREATE
+        )
+        item.bind_property(
+            "date_completed", row, "date_completed", GObject.BindingFlags.SYNC_CREATE
+        )
+        item.bind_property("size", row, "size", GObject.BindingFlags.SYNC_CREATE)
+        item.bind_property(
+            "resumable", row, "resumable", GObject.BindingFlags.SYNC_CREATE
+        )
         item.row = row
         return row
-        
+
     def _update_ui(self):
-        if self.finished_list_box is not None:
-            finished_count = self.finished_downloads.get_n_items() > 0
-            running_count = self.running_downloads.get_n_items() > 0
-            #                      Frame        ListBox 
-            self.finished_list_box.get_parent().get_parent().set_visible(finished_count)
-            self.running_list_box.get_parent().get_parent().set_visible(running_count)
-            if not finished_count and not running_count:
-                self.empty_stack.set_visible_child_name('empty_page')
-            else:
-                self.empty_stack.set_visible_child_name('not_empty_page')
+        logging.debug(self.finished_downloads.get_n_items())
+        logging.debug(self.running_downloads.get_n_items())
+        finished_not_empty = self.finished_downloads.get_n_items() > 0
+        running_not_empty = self.running_downloads.get_n_items() > 0
+        #                      Frame        ListBox
+        self.finished_list_box.get_parent().get_parent().set_visible(finished_not_empty)
+        self.running_list_box.get_parent().get_parent().set_visible(running_not_empty)
+        if not finished_not_empty and not running_not_empty:
+            self.empty_stack.set_visible_child_name("empty_page")
+        else:
+            self.empty_stack.set_visible_child_name("not_empty_page")
