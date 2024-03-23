@@ -1,26 +1,5 @@
-import os
-import threading
-import uuid
-from gi.repository import GObject, GLib, Gio
-import pycurl
-
-from flow.utils.notifier import Notifier
-
-from flow.utils.misc import create_download_temp, file_extension_match
-
-from flow.core.status_manager import StatusManager
-import logging
-import shutil
-import mimetypes
-import cgi
-import time
-from urllib.parse import unquote, urlparse
-from flow.core.settings import Settings
-from flow.utils.toaster import Toaster
+from gi.repository import GObject
 from gettext import gettext as _
-from dataclasses import dataclass
-import validators
-
 
 class Download(GObject.Object):
     __gtype_name__ = "Download"

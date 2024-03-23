@@ -154,11 +154,7 @@ class DownloadsController(GObject.GObject):
         )
 
     def add_from_url(self, url, headers=None, raw_headers=None):
-        if self.waiting_for_link is None:
-            self._create_download(url, headers, raw_headers)
-        else:
-            self._confirm_update(url, headers, raw_headers)
-            # self._update_link(url, headers, self.waiting_for_link[0], raw_headers is not None)
+        daemon.new_download_confirmed(url)
 
     def _create_download(self, url, headers, raw_headers):
         self.running_downloads.insert(
